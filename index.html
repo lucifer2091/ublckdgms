@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0b0f">
+<title>UNBLOCKED GAMES</title>
+<style>
+  :root{
+    --bg:#0b0b0f; --panel:#15151d; --panel2:#1c1c26; --line:#2a2a38;
+    --txt:#f2f0ea; --dim:#9a96a8; --acc:#ff8a3d; --acc2:#ffc247;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg); color:var(--txt); min-height:100vh; overflow-x:hidden;
+    background-image:radial-gradient(900px 500px at 15% -10%,rgba(255,138,61,.13),transparent 60%),
+                     radial-gradient(700px 400px at 90% 0%,rgba(124,92,255,.10),transparent 60%);
+    background-attachment:fixed;
+  }
+  .wrap{max-width:1240px;margin:0 auto;padding:0 22px}
+  header{position:sticky;top:0;z-index:40;backdrop-filter:blur(14px);
+    background:rgba(11,11,15,.78);border-bottom:1px solid var(--line)}
+  .bar{display:flex;align-items:center;gap:18px;padding:16px 0;flex-wrap:wrap}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:-.02em;font-size:1.15rem}
+  .logo .dot{width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,var(--acc),var(--acc2));
+    box-shadow:0 0 18px rgba(255,138,61,.7)}
+  .logo span{color:var(--acc)}
+  .search{flex:1;min-width:220px;position:relative}
+  .search input{width:100%;padding:11px 14px 11px 38px;border-radius:11px;border:1px solid var(--line);
+    background:var(--panel);color:var(--txt);font-size:.92rem;outline:none;transition:border-color .15s,box-shadow .15s}
+  .search input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(255,138,61,.14)}
+  .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.5}
+  .count{font-size:.78rem;color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+  main{padding:34px 0 70px}
+  .hero h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.02;letter-spacing:-.04em;font-weight:900}
+  .hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--acc),var(--acc2));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--dim);margin-top:10px;font-size:.95rem;max-width:620px;line-height:1.55}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 22px}
+  .chip{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);
+    color:var(--dim);font-size:.8rem;font-weight:600;cursor:pointer;transition:.15s;user-select:none}
+  .chip:hover{color:var(--txt);border-color:#3b3b4d}
+  .chip.on{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#1a1206;border-color:transparent}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+  .card{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:16px;
+    min-height:112px;padding:16px 16px 14px;border-radius:14px;border:1px solid var(--line);
+    background:linear-gradient(160deg,var(--panel2),var(--panel));cursor:pointer;overflow:hidden;
+    transition:transform .16s,border-color .16s,box-shadow .16s;text-decoration:none;color:inherit}
+  .card::after{content:"";position:absolute;inset:0;border-radius:14px;padding:1px;
+    background:linear-gradient(135deg,rgba(255,138,61,.55),transparent 45%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .16s;pointer-events:none}
+  .card:hover{transform:translateY(-3px);border-color:#3d3d52;box-shadow:0 14px 34px rgba(0,0,0,.45)}
+  .card:hover::after{opacity:1}
+  .card h3{font-size:.98rem;line-height:1.25;letter-spacing:-.01em;font-weight:700}
+  .meta{display:flex;align-items:center;gap:8px;font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+  .meta .tag{padding:3px 7px;border-radius:5px;background:rgba(255,138,61,.12);color:var(--acc);font-weight:700}
+  .meta .tag.dl{background:rgba(124,92,255,.15);color:#b3a2ff}
+  .play{position:absolute;right:14px;top:14px;width:26px;height:26px;border-radius:50%;
+    display:grid;place-items:center;background:rgba(255,255,255,.06);opacity:0;transition:.16s}
+  .card:hover .play{opacity:1}
+  .empty{padding:60px 0;text-align:center;color:var(--dim);display:none}
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--dim);font-size:.78rem;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+  #overlay{position:fixed;inset:0;z-index:100;display:none;background:#08080c;flex-direction:column}
+  #overlay.open{display:flex}
+  .ov-bar{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+  .ov-title{font-weight:700;font-size:.9rem;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ov-btn{padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);
+    color:var(--txt);font-size:.8rem;font-weight:600;cursor:pointer;text-decoration:none}
+  .ov-btn:hover{border-color:var(--acc);color:var(--acc)}
+  #frame{flex:1;width:100%;border:0;background:#000}
+  body.locked{overflow:hidden}
+  @media(max-width:560px){.count{display:none}.hero h1{font-size:2rem}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <div class="logo"><span class="dot"></span>UNBLOCKED&nbsp;<span>GAMES</span></div>
+    <div class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search gamesâ€¦  (press /)" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="count" id="count"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero">
+    <h1>PLAY <em>ANYTHING.</em></h1>
+    <p>Every game from all three archives, in one place. Click a card to launch it right here â€” no downloads, no installs.</p>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty">No games match that search.</div>
+</main>
+
+<footer class="wrap">
+  <div id="foot"></div>
+  <div>Hosted on GitHub Pages</div>
+</footer>
+
+<div id="overlay">
+  <div class="ov-bar">
+    <div class="ov-title" id="ovTitle"></div>
+    <a class="ov-btn" id="ovNew" target="_blank" rel="noopener">Open in new tab</a>
+    <button class="ov-btn" id="ovClose">Close âœ•</button>
+  </div>
+  <iframe id="frame" allow="fullscreen; autoplay; gamepad; clipboard-write; encrypted-media" allowfullscreen></iframe>
+</div>
+
+<script>
+const GAMES = [{"n":"1v1.LOL","c":"Games","s":94,"u":"https://lucifer2091.github.io/ublckdgms-15/1v1lol/","r":"ublckdgms-15","d":false},{"n":"Ace Attorney Investigations: Miles Edgeworth","c":"Emulators","s":64,"u":"https://lucifer2091.github.io/ublckdgms-16/miles-edgeworth/","r":"ublckdgms-16","d":false},{"n":"Angry Birds Chrome","c":"Games","s":136,"u":"https://lucifer2091.github.io/ublckdgms-14/angry-birds/","r":"ublckdgms-14","d":false},{"n":"Ape Escape","c":"Emulators","s":413,"u":"https://lucifer2091.github.io/ublckdgms-09/ape-escape/","r":"ublckdgms-09","d":false},{"n":"Apollo Justice: Ace Attorney","c":"Emulators","s":64,"u":"https://lucifer2091.github.io/ublckdgms-16/apollo-justice/","r":"ublckdgms-16","d":false},{"n":"Bad Piggies","c":"Games","s":71,"u":"https://lucifer2091.github.io/ublckdgms-15/bad-piggies/","r":"ublckdgms-15","d":false},{"n":"Balatro","c":"Games","s":120,"u":"https://lucifer2091.github.io/ublckdgms-15/balatrojs/","r":"ublckdgms-15","d":false},{"n":"Baldi\u0027s Basics Classic Remastered","c":"Games","s":85,"u":"https://lucifer2091.github.io/ublckdgms-15/baldis-basics/","r":"ublckdgms-15","d":false},{"n":"Banjo-Kazooie","c":"Emulators","s":16,"u":"https://lucifer2091.github.io/ublckdgms-16/banjo-kazooie/","r":"ublckdgms-16","d":false},{"n":"BitLife - Life Simulator","c":"Games","s":20,"u":"https://lucifer2091.github.io/ublckdgms-06/bitlife/","r":"ublckdgms-06","d":false},{"n":"Bloons TD 5","c":"Flash Classics","s":11,"u":"https://lucifer2091.github.io/ublckdgms-16/bloons-td5/","r":"ublckdgms-16","d":false},{"n":"Bloxorz","c":"Flash Classics","s":2,"u":"https://lucifer2091.github.io/ublckdgms-09/flashgames-bloxorz/","r":"ublckdgms-09","d":false},{"n":"Buckshot Roulette","c":"Games","s":371,"u":"https://lucifer2091.github.io/ublckdgms-09/buckshot-roulette/","r":"ublckdgms-09","d":false},{"n":"Class of \u002709","c":"Games","s":768,"u":"https://lucifer2091.github.io/ublckdgms-02/birdseed-c009/","r":"ublckdgms-02","d":false},{"n":"Cookie Clicker","c":"Games","s":12,"u":"https://lucifer2091.github.io/ublckdgms-16/cookieclicker/","r":"ublckdgms-16","d":false},{"n":"Cuphead","c":"Download Only","s":1295,"u":"https://github.com/lucifer2091/trans-2W/tree/main/cuphead","r":"trans-2W","d":true},{"n":"Deltarune - Chapter 1","c":"Deltarune","s":225,"u":"https://lucifer2091.github.io/ublckdgms-03/deltarune-1/","r":"ublckdgms-03","d":false},{"n":"Deltarune - Chapter 2","c":"Deltarune","s":283,"u":"https://lucifer2091.github.io/ublckdgms-12/deltarune-2/","r":"ublckdgms-12","d":false},{"n":"Deltarune - Chapter 3","c":"Deltarune","s":359,"u":"https://lucifer2091.github.io/ublckdgms-10/deltarune-3/","r":"ublckdgms-10","d":false},{"n":"Deltarune - Chapter 4","c":"Deltarune","s":351,"u":"https://lucifer2091.github.io/ublckdgms-11/deltarune-4/","r":"ublckdgms-11","d":false},{"n":"Deltarune - Chapter 5","c":"Deltarune","s":482,"u":"https://lucifer2091.github.io/ublckdgms-08/deltarune-5/","r":"ublckdgms-08","d":false},{"n":"Doki Doki Literature Club!","c":"Games","s":239,"u":"https://lucifer2091.github.io/ublckdgms-13/ddlc/","r":"ublckdgms-13","d":false},{"n":"Donkey Kong 64","c":"Emulators","s":32,"u":"https://lucifer2091.github.io/ublckdgms-08/donkey-kong-64/","r":"ublckdgms-08","d":false},{"n":"Donkey Kong Country 2","c":"Emulators","s":4,"u":"https://lucifer2091.github.io/ublckdgms-16/donkey-kong-country-2/","r":"ublckdgms-16","d":false},{"n":"Eaglercraft 1.12.2 (Client / JS)","c":"Minecraft","s":77,"u":"https://lucifer2091.github.io/ublckdgms-13/eaglercraft-1.12.2-js/","r":"ublckdgms-13","d":false},{"n":"Eaglercraft 1.12.2 (Client / WASM)","c":"Minecraft","s":24,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.12.2-wasm/","r":"ublckdgms-16","d":false},{"n":"Eaglercraft 1.12.2 (Web / JS)","c":"Minecraft","s":89,"u":"https://lucifer2091.github.io/ublckdgms-15/eaglercraft-1.12.2-web-js/","r":"ublckdgms-15","d":false},{"n":"Eaglercraft 1.12.2 (Web / WASM)","c":"Minecraft","s":18,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.12.2-web-wasm/","r":"ublckdgms-16","d":false},{"n":"Eaglercraft 1.16.5 (Client / WASM)","c":"Minecraft","s":44,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.16.5-wasm/","r":"ublckdgms-16","d":false},{"n":"Eaglercraft 1.16.5 (Web / WASM)","c":"Minecraft","s":34,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.16.5-web-wasm/","r":"ublckdgms-16","d":false},{"n":"Eaglercraft 1.21.11 (Client / WASM)","c":"Minecraft","s":46,"u":"https://lucifer2091.github.io/ublckdgms-15/eaglercraft-1.21.11-wasm/","r":"ublckdgms-15","d":false},{"n":"Eaglercraft 1.8.8 (Client / JS)","c":"Minecraft","s":17,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.8.8-js/","r":"ublckdgms-16","d":false},{"n":"Eaglercraft 1.8.8 (Client / WASM)","c":"Minecraft","s":14,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.8.8-wasm/","r":"ublckdgms-16","d":false},{"n":"Escape Road","c":"Games","s":232,"u":"https://lucifer2091.github.io/ublckdgms-13/escape-road/","r":"ublckdgms-13","d":false},{"n":"False Frights","c":"Games","s":209,"u":"https://lucifer2091.github.io/ublckdgms-13/false-frights/","r":"ublckdgms-13","d":false},{"n":"Fears to Fathom: Home Alone","c":"Games","s":786,"u":"https://lucifer2091.github.io/ublckdgms-01/fears-to-fathom/","r":"ublckdgms-01","d":false},{"n":"Five Night\u0027s at BIG E","c":"Games","s":156,"u":"https://lucifer2091.github.io/ublckdgms-01/fnae/","r":"ublckdgms-01","d":false},{"n":"Five Nights at Freddy\u0027s 1","c":"FNAF","s":164,"u":"https://lucifer2091.github.io/ublckdgms-09/fnaf-1/","r":"ublckdgms-09","d":false},{"n":"Five Nights at Freddy\u0027s 2","c":"FNAF","s":180,"u":"https://lucifer2091.github.io/ublckdgms-02/fnaf-2/","r":"ublckdgms-02","d":false},{"n":"Five Nights at Freddy\u0027s 3","c":"FNAF","s":185,"u":"https://lucifer2091.github.io/ublckdgms-14/fnaf-3/","r":"ublckdgms-14","d":false},{"n":"Five Nights at Freddy\u0027s 4","c":"FNAF","s":344,"u":"https://lucifer2091.github.io/ublckdgms-11/fnaf-4/","r":"ublckdgms-11","d":false},{"n":"Five Nights at Freddy\u0027s Pizzeria Simulator","c":"FNAF","s":362,"u":"https://lucifer2091.github.io/ublckdgms-07/fnaf-pizzeria-simulator/","r":"ublckdgms-07","d":false},{"n":"Five Nights at Freddy\u0027s Sister Location","c":"FNAF","s":703,"u":"https://lucifer2091.github.io/ublckdgms-04/fnaf-sister-location/","r":"ublckdgms-04","d":false},{"n":"Five Nights at Freddy\u0027s Ultimate Custom Night","c":"FNAF","s":314,"u":"https://lucifer2091.github.io/ublckdgms-12/fnaf-ucn/","r":"ublckdgms-12","d":false},{"n":"Five Nights at Freddy\u0027s World","c":"FNAF","s":254,"u":"https://lucifer2091.github.io/ublckdgms-11/fnaf-world/","r":"ublckdgms-11","d":false},{"n":"Funny Shooter","c":"Games","s":80,"u":"https://lucifer2091.github.io/ublckdgms-15/funny-shooter/","r":"ublckdgms-15","d":false},{"n":"FX Client","c":"Games","s":1,"u":"https://lucifer2091.github.io/ublckdgms-02/fxclient/","r":"ublckdgms-02","d":false},{"n":"Grand Theft Auto: Vice City","c":"Games","s":0,"u":"https://lucifer2091.github.io/ublckdgms-01/gtavc/","r":"ublckdgms-01","d":false},{"n":"Granny","c":"Games","s":587,"u":"https://lucifer2091.github.io/ublckdgms-07/granny/","r":"ublckdgms-07","d":false},{"n":"Half-Life","c":"Games","s":238,"u":"https://lucifer2091.github.io/ublckdgms-10/half-life/","r":"ublckdgms-10","d":false},{"n":"Happy Wheels","c":"Flash Classics","s":4,"u":"https://lucifer2091.github.io/ublckdgms-16/flashgames-happywheels/","r":"ublckdgms-16","d":false},{"n":"Hollow Knight","c":"Games","s":952,"u":"https://lucifer2091.github.io/ublckdgms-17/hollow-knight/","r":"ublckdgms-17","d":false},{"n":"Kindergarten","c":"Kindergarten","s":72,"u":"https://lucifer2091.github.io/ublckdgms-15/kindergarten-1/","r":"ublckdgms-15","d":false},{"n":"Kindergarten 2","c":"Kindergarten","s":80,"u":"https://lucifer2091.github.io/ublckdgms-15/kindergarten-2/","r":"ublckdgms-15","d":false},{"n":"Liquid Soccer","c":"Games","s":28,"u":"https://lucifer2091.github.io/ublckdgms-12/liquidsoccer/","r":"ublckdgms-12","d":false},{"n":"Little Alchemy 2","c":"Games","s":6,"u":"https://lucifer2091.github.io/ublckdgms-01/little-alchemy-2/","r":"ublckdgms-01","d":false},{"n":"Mario Kart 64","c":"Emulators","s":12,"u":"https://lucifer2091.github.io/ublckdgms-16/mario-kart-64/","r":"ublckdgms-16","d":false},{"n":"Metal Gear Solid","c":"Emulators","s":673,"u":"https://lucifer2091.github.io/ublckdgms-06/metal-gear-solid/","r":"ublckdgms-06","d":false},{"n":"Mischief Makers","c":"Emulators","s":8,"u":"https://lucifer2091.github.io/ublckdgms-16/mischief-makers/","r":"ublckdgms-16","d":false},{"n":"MotoX3M","c":"Games","s":52,"u":"https://lucifer2091.github.io/ublckdgms-16/moto-x3m/","r":"ublckdgms-16","d":false},{"n":"OMORI","c":"Download Only","s":2765,"u":"https://github.com/lucifer2091/trans-fire/tree/main/omori","r":"trans-fire","d":true},{"n":"Papa\u0027s Burgeria","c":"Flash Classics","s":4,"u":"https://lucifer2091.github.io/ublckdgms-16/papas-burgeria/","r":"ublckdgms-16","d":false},{"n":"Papa\u0027s Pizzeria","c":"Flash Classics","s":3,"u":"https://lucifer2091.github.io/ublckdgms-03/papas-pizzeria/","r":"ublckdgms-03","d":false},{"n":"Papa\u0027s Scooperia","c":"Flash Classics","s":20,"u":"https://lucifer2091.github.io/ublckdgms-16/papas-scooperia/","r":"ublckdgms-16","d":false},{"n":"Paper.io 2","c":"Games","s":1,"u":"https://lucifer2091.github.io/ublckdgms-08/paperio2/","r":"ublckdgms-08","d":false},{"n":"Perfect Dark","c":"Emulators","s":32,"u":"https://lucifer2091.github.io/ublckdgms-16/perfect-dark/","r":"ublckdgms-16","d":false},{"n":"Phoenix Wright: Ace Attorney","c":"Emulators","s":128,"u":"https://lucifer2091.github.io/ublckdgms-14/phoenix-wright/","r":"ublckdgms-14","d":false},{"n":"Pizza Tower","c":"Games","s":275,"u":"https://lucifer2091.github.io/ublckdgms-05/pizza-tower/","r":"ublckdgms-05","d":false},{"n":"Plague Inc","c":"Games","s":324,"u":"https://lucifer2091.github.io/ublckdgms-12/plagueinc-ev/","r":"ublckdgms-12","d":false},{"n":"Plants vs. Zombies 2","c":"Download Only","s":1206,"u":"https://github.com/lucifer2091/trans-fire/tree/main/plantsvszombiesjs/2","r":"trans-fire","d":true},{"n":"Plants vs. Zombies MODDED Official","c":"Games","s":176,"u":"https://lucifer2091.github.io/ublckdgms-14/plantsvszombiesjs-modstol/","r":"ublckdgms-14","d":false},{"n":"Pokemon Emerald","c":"Emulators","s":16,"u":"https://lucifer2091.github.io/ublckdgms-16/pokemon-emerald/","r":"ublckdgms-16","d":false},{"n":"Pokemon Platinum","c":"Emulators","s":128,"u":"https://lucifer2091.github.io/ublckdgms-14/pokemon-platinum/","r":"ublckdgms-14","d":false},{"n":"Pokemon Ruby","c":"Emulators","s":16,"u":"https://lucifer2091.github.io/ublckdgms-16/pokemon-ruby/","r":"ublckdgms-16","d":false},{"n":"Polytrack","c":"Games","s":88,"u":"https://lucifer2091.github.io/ublckdgms-15/polytrack/","r":"ublckdgms-15","d":false},{"n":"R.E.P.O.","c":"Games","s":353,"u":"https://lucifer2091.github.io/ublckdgms-10/repo/","r":"ublckdgms-10","d":false},{"n":"Ragdoll Hit - Poki","c":"Games","s":39,"u":"https://lucifer2091.github.io/ublckdgms-16/ragdollhit/","r":"ublckdgms-16","d":false},{"n":"Raldi\u0027s Crackhouse","c":"Games","s":722,"u":"https://lucifer2091.github.io/ublckdgms-03/raldis-crackhouse/","r":"ublckdgms-03","d":false},{"n":"Scooby Run","c":"Flash Classics","s":1,"u":"https://lucifer2091.github.io/ublckdgms-01/flashgames-scoobyrun/","r":"ublckdgms-01","d":false},{"n":"Sheepy: A Short Adventure","c":"Games","s":247,"u":"https://lucifer2091.github.io/ublckdgms-04/sheepy/","r":"ublckdgms-04","d":false},{"n":"Stardew Valley","c":"Games","s":674,"u":"https://lucifer2091.github.io/ublckdgms-05/stardew-valley/","r":"ublckdgms-05","d":false},{"n":"Super Mario 64","c":"Emulators","s":8,"u":"https://lucifer2091.github.io/ublckdgms-16/super-mario-64/","r":"ublckdgms-16","d":false},{"n":"That\u0027s not my neighbor","c":"Games","s":434,"u":"https://lucifer2091.github.io/ublckdgms-08/thats-not-my-neighbor/","r":"ublckdgms-08","d":false},{"n":"The Binding of Isaac","c":"Flash Classics","s":34,"u":"https://lucifer2091.github.io/ublckdgms-16/binding-of-isaac/","r":"ublckdgms-16","d":false},{"n":"The Legend of Zelda: Ocarina of Time","c":"Emulators","s":32,"u":"https://lucifer2091.github.io/ublckdgms-16/ocarina-of-time/","r":"ublckdgms-16","d":false},{"n":"ULTRAKILL","c":"Games","s":187,"u":"https://lucifer2091.github.io/ublckdgms-14/ultrakill/","r":"ublckdgms-14","d":false},{"n":"UNDERTALE","c":"Games","s":193,"u":"https://lucifer2091.github.io/ublckdgms-13/undertale/","r":"ublckdgms-13","d":false},{"n":"UNDERTALE YELLOW","c":"Games","s":257,"u":"https://lucifer2091.github.io/ublckdgms-06/undertale-yellow/","r":"ublckdgms-06","d":false},{"n":"Unicycle Hero","c":"Games","s":4,"u":"https://lucifer2091.github.io/ublckdgms-16/unicycle/","r":"ublckdgms-16","d":false},{"n":"Vex 3","c":"Vex","s":10,"u":"https://lucifer2091.github.io/ublckdgms-14/vex-3/","r":"ublckdgms-14","d":false},{"n":"Vex 4","c":"Vex","s":13,"u":"https://lucifer2091.github.io/ublckdgms-16/vex-4/","r":"ublckdgms-16","d":false},{"n":"Vex 5","c":"Vex","s":12,"u":"https://lucifer2091.github.io/ublckdgms-16/vex-5/","r":"ublckdgms-16","d":false},{"n":"Vex 6","c":"Vex","s":23,"u":"https://lucifer2091.github.io/ublckdgms-16/vex-6/","r":"ublckdgms-16","d":false},{"n":"Vex 7","c":"Vex","s":29,"u":"https://lucifer2091.github.io/ublckdgms-16/vex-7/","r":"ublckdgms-16","d":false},{"n":"Water Ragdoll","c":"Flash Classics","s":0,"u":"https://lucifer2091.github.io/ublckdgms-01/flashgames-waterragdoll/","r":"ublckdgms-01","d":false},{"n":"Web Dashers","c":"Games","s":122,"u":"https://lucifer2091.github.io/ublckdgms-15/gdwebp/","r":"ublckdgms-15","d":false},{"n":"WHG","c":"Flash Classics","s":1,"u":"https://lucifer2091.github.io/ublckdgms-05/flashgames-whg/","r":"ublckdgms-05","d":false}];
+const CATS = ['All','Games','FNAF','Deltarune','Emulators','Minecraft','Flash Classics','Vex','Kindergarten','Download Only'];
+let cat = 'All', query = '';
+
+const grid = document.getElementById('grid');
+const empty = document.getElementById('empty');
+const countEl = document.getElementById('count');
+const chips = document.getElementById('chips');
+const overlay = document.getElementById('overlay');
+const frame = document.getElementById('frame');
+const ovTitle = document.getElementById('ovTitle');
+const ovNew = document.getElementById('ovNew');
+
+CATS.forEach(c => {
+  const b = document.createElement('button');
+  b.className = 'chip' + (c === 'All' ? ' on' : '');
+  b.textContent = c;
+  b.onclick = () => { cat = c; document.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b)); render(); };
+  chips.appendChild(b);
+});
+
+function render(){
+  const q = query.trim().toLowerCase();
+  const list = GAMES.filter(g =>
+    (cat === 'All' || g.c === cat) &&
+    (!q || g.n.toLowerCase().includes(q) || g.c.toLowerCase().includes(q))
+  );
+  grid.innerHTML = '';
+  list.forEach(g => {
+    const a = document.createElement('a');
+    a.className = 'card';
+    a.href = g.u;
+    a.innerHTML = `<div class="play"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+      <h3>${escapeHtml(g.n)}</h3>
+      <div class="meta"><span class="tag${g.d ? ' dl' : ''}">${escapeHtml(g.c)}</span><span>${g.s} MB</span></div>`;
+    if (g.d) {
+      a.target = '_blank'; a.rel = 'noopener';
+    } else {
+      a.onclick = (ev) => { ev.preventDefault(); openGame(g); };
+    }
+    grid.appendChild(a);
+  });
+  empty.style.display = list.length ? 'none' : 'block';
+  countEl.textContent = list.length + ' / ' + GAMES.length + ' games';
+  document.getElementById('foot').textContent = GAMES.length + ' games across 17 archives';
+}
+
+function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function openGame(g){
+  ovTitle.textContent = g.n;
+  ovNew.href = g.u;
+  frame.src = g.u;
+  overlay.classList.add('open');
+  document.body.classList.add('locked');
+  history.replaceState(null, '', '#play=' + encodeURIComponent(g.n));
+}
+function closeGame(){
+  overlay.classList.remove('open');
+  document.body.classList.remove('locked');
+  frame.src = 'about:blank';
+  history.replaceState(null, '', location.pathname + location.search);
+}
+document.getElementById('ovClose').onclick = closeGame;
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && overlay.classList.contains('open')) closeGame();
+  if (e.key === '/' && document.activeElement !== document.getElementById('q')) { e.preventDefault(); document.getElementById('q').focus(); }
+});
+document.getElementById('q').addEventListener('input', e => { query = e.target.value; render(); });
+window.addEventListener('hashchange', () => { if (!location.hash.startsWith('#play=')) closeGame(); });
+
+render();
+</script>
+</body>
+</html>
