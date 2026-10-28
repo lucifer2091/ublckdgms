@@ -132,13 +132,7 @@ header{border-bottom:1px solid var(--rule)}
 
 .empty{padding:2.8rem 0 3.6rem;color:var(--faint);font-size:.9rem;display:none}
 
-footer{
-  border-top:1px solid var(--rule);margin-top:.4rem;
-  padding:1.1rem 0 2.6rem;
-  display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
-  font-size:.8rem;color:var(--faint);
-}
-footer span{font-family:var(--serif);font-style:italic;font-size:.78rem}
+main.wrap{padding-bottom:clamp(30px, 3.2rem, 60px)}
 
 #overlay{
   position:fixed;inset:0;height:100dvh;z-index:50;
@@ -214,11 +208,6 @@ body.locked{overflow:hidden}
   <div id="sections"></div>
   <div class="empty" id="empty">Nothing matches that.</div>
 </main>
-
-<footer class="wrap">
-  <div id="foot"></div>
-  <span>github pages</span>
-</footer>
 
 <div id="overlay">
   <div class="ov-bar">
@@ -305,7 +294,6 @@ function render() {
 
   emptyEl.style.display = shown ? 'none' : 'block';
   countEl.textContent = shown === GAMES.length ? GAMES.length + ' games' : shown + ' of ' + GAMES.length;
-  $('foot').textContent = GAMES.length + ' games in ' + PRESENT.length + ' sections';
 
   if (settleNext && !REDUCED) {
     listEl.animate(
