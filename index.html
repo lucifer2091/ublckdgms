@@ -15,6 +15,8 @@
   --accent:#b4451f;
   --serif:Georgia,"Iowan Old Style","Times New Roman",Times,serif;
   --head:"Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --fast:120ms;
+  --ease:cubic-bezier(.2,.65,.3,1);
 }
 *{box-sizing:border-box}
 html{
@@ -27,13 +29,17 @@ body{
   color:var(--ink);
   font:400 1rem/1.6 var(--serif);
   -webkit-font-smoothing:antialiased;
+  animation:settle .18s ease-out both;
 }
+@keyframes settle{from{opacity:0}to{opacity:1}}
+
 .wrap{
   max-width:74rem;
   margin:0 auto;
   padding:0 clamp(16px, 2.4vw, 40px);
 }
 a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 header{border-bottom:1px solid var(--rule)}
 .top{
@@ -50,6 +56,7 @@ header{border-bottom:1px solid var(--rule)}
 .count{
   font-family:var(--serif);font-style:italic;
   font-size:.78rem;color:var(--faint);white-space:nowrap;
+  transition:opacity var(--fast) linear;
 }
 .search input{
   width:clamp(130px, 18vw, 220px);
@@ -57,8 +64,9 @@ header{border-bottom:1px solid var(--rule)}
   border:1px solid var(--rule);border-radius:3px;
   background:var(--card);color:var(--ink);
   font:inherit;font-size:.84rem;outline:none;
+  transition:border-color var(--fast) linear, background-color var(--fast) linear;
 }
-.search input:focus{border-color:#c2b7a4}
+.search input:focus{border-color:#c2b7a4;background:#fff}
 .search input::placeholder{color:var(--faint)}
 
 .intro{padding:clamp(24px, 2.3rem, 40px) 0 .25rem;max-width:40rem}
@@ -78,6 +86,7 @@ header{border-bottom:1px solid var(--rule)}
 .filters button{
   background:none;border:0;padding:0 0 1px;margin:0;cursor:pointer;
   font:inherit;font-size:.87rem;color:var(--muted);
+  transition:color var(--fast) linear;
 }
 .filters button:hover{color:var(--ink)}
 .filters button.on{color:var(--ink);font-weight:600;box-shadow:inset 0 -1px 0 var(--accent)}
@@ -103,16 +112,23 @@ header{border-bottom:1px solid var(--rule)}
   display:flex;align-items:baseline;gap:.55rem;
   padding:.56rem .7rem;border:1px solid var(--rule);border-radius:3px;
   background:var(--card);text-decoration:none;
+  transition:background-color var(--fast) linear, border-color var(--fast) linear;
 }
 .card:hover{border-color:#cdc3b2;background:#fff}
-.card:active{background:#f4efe5}
+.card:active{background:#f2ece0}
 .card h3{margin:0;flex:1;font-size:.94rem;font-weight:400;line-height:1.35}
 .card .sz{
   font-family:var(--serif);font-style:italic;
   font-size:.78rem;color:var(--faint);white-space:nowrap;
+  transition:color var(--fast) linear;
 }
+.card:hover .sz{color:var(--muted)}
 .card.dl .sz{color:var(--accent)}
-.card.dl h3::after{content:"\2193";color:var(--accent);margin-left:.3rem;font-size:.85em}
+.card.dl h3::after{
+  content:"\2193";color:var(--accent);margin-left:.3rem;font-size:.85em;
+  display:inline-block;transition:transform var(--fast) var(--ease);
+}
+.card.dl:hover h3::after{transform:translateY(.12em)}
 
 .empty{padding:2.8rem 0 3.6rem;color:var(--faint);font-size:.9rem;display:none}
 
@@ -126,15 +142,23 @@ footer span{font-family:var(--serif);font-style:italic;font-size:.78rem}
 
 #overlay{
   position:fixed;inset:0;height:100dvh;z-index:50;
-  display:none;flex-direction:column;background:#101010;
+  display:flex;flex-direction:column;background:#101010;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .16s ease-out, visibility 0s linear .16s;
 }
-#overlay.open{display:flex}
+#overlay.open{
+  opacity:1;visibility:visible;pointer-events:auto;
+  transition:opacity .16s ease-out;
+}
 .ov-bar{
   display:flex;align-items:center;gap:1rem;
   padding:.55rem 1rem;
   border-bottom:1px solid #242424;background:#171717;color:#e9e5dd;
   font-size:.8rem;
+  transform:translateY(-.45rem);
+  transition:transform .16s var(--ease);
 }
+#overlay.open .ov-bar{transform:none}
 .ov-title{
   flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   font-family:var(--head);font-size:.97rem;
@@ -142,9 +166,14 @@ footer span{font-family:var(--serif);font-style:italic;font-size:.78rem}
 .ov-bar a,.ov-bar button{
   background:none;border:0;padding:0;cursor:pointer;font:inherit;
   color:#a39d94;text-decoration:none;white-space:nowrap;
+  transition:color var(--fast) linear;
 }
 .ov-bar a:hover,.ov-bar button:hover{color:#fff}
-#frame{flex:1;width:100%;border:0;background:#000}
+#frame{
+  flex:1;width:100%;border:0;background:#000;
+  opacity:0;transition:opacity .2s ease-out;
+}
+#frame.ready{opacity:1}
 body.locked{overflow:hidden}
 
 @media (max-width:560px){
@@ -152,6 +181,14 @@ body.locked{overflow:hidden}
   .search{flex:1 1 100%;order:3}
   .search input{width:100%}
   .ov-bar{gap:.7rem;font-size:.72rem}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+  }
 }
 </style>
 </head>
@@ -197,6 +234,8 @@ const GAMES = [{"n":"1v1.LOL","g":"Action \u0026 Shooters","s":94,"u":"https://l
 const ORDER = ["Action \u0026 Shooters","Horror","Platformers","Racing \u0026 Sports","Simulation \u0026 Idle","Puzzle \u0026 Strategy","RPG \u0026 Story","Five Nights at Freddy\u0027s","Deltarune","Vex","Kindergarten","Emulators","Minecraft","Flash Classics","Download Only"];
 
 let group = 'All', term = '';
+let settleNext = false;
+const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const $ = id => document.getElementById(id);
 const listEl = $('sections'), emptyEl = $('empty'), countEl = $('count'), filterEl = $('filters');
@@ -213,6 +252,7 @@ const PRESENT = ORDER.filter(g => GAMES.some(x => x.g === g));
   b.onclick = () => {
     group = name;
     filterEl.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    settleNext = true;
     render();
   };
   li.appendChild(b);
@@ -266,11 +306,23 @@ function render() {
   emptyEl.style.display = shown ? 'none' : 'block';
   countEl.textContent = shown === GAMES.length ? GAMES.length + ' games' : shown + ' of ' + GAMES.length;
   $('foot').textContent = GAMES.length + ' games in ' + PRESENT.length + ' sections';
+
+  if (settleNext && !REDUCED) {
+    listEl.animate(
+      [{ opacity: .55 }, { opacity: 1 }],
+      { duration: 140, easing: 'ease-out' }
+    );
+  }
+  settleNext = false;
 }
 
+let closeTimer = null;
+
 function openGame(x) {
+  clearTimeout(closeTimer);
   ovTitle.textContent = x.n;
   ovNew.href = x.u;
+  frame.classList.remove('ready');
   frame.src = x.u;
   overlay.classList.add('open');
   document.body.classList.add('locked');
@@ -280,11 +332,17 @@ function openGame(x) {
 function closeGame() {
   overlay.classList.remove('open');
   document.body.classList.remove('locked');
-  frame.src = 'about:blank';
+  frame.classList.remove('ready');
+  clearTimeout(closeTimer);
+  closeTimer = setTimeout(() => { frame.src = 'about:blank'; }, REDUCED ? 0 : 180);
   history.replaceState(null, '', location.pathname + location.search);
 }
 
 $('ovClose').onclick = closeGame;
+
+frame.addEventListener('load', () => {
+  if (overlay.classList.contains('open')) frame.classList.add('ready');
+});
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && overlay.classList.contains('open')) closeGame();
