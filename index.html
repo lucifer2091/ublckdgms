@@ -317,19 +317,23 @@ function render() {
 }
 
 let closeTimer = null;
+let fadeTimer = null;
 
 function openGame(x) {
   clearTimeout(closeTimer);
+  clearTimeout(fadeTimer);
   ovTitle.textContent = x.n;
   ovNew.href = x.u;
   frame.classList.remove('ready');
   frame.src = x.u;
   overlay.classList.add('open');
   document.body.classList.add('locked');
+  fadeTimer = setTimeout(() => frame.classList.add('ready'), 350);
   history.replaceState(null, '', '#play=' + encodeURIComponent(x.n));
 }
 
 function closeGame() {
+  clearTimeout(fadeTimer);
   overlay.classList.remove('open');
   document.body.classList.remove('locked');
   frame.classList.remove('ready');
