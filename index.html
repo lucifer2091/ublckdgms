@@ -87,7 +87,7 @@
     <div class="logo"><span class="dot"></span>UNBLOCKED&nbsp;<span>GAMES</span></div>
     <div class="search">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="Search gamesâ€¦  (press /)" autocomplete="off" spellcheck="false">
+      <input id="q" type="search" placeholder="Search games...  (press /)" autocomplete="off" spellcheck="false">
     </div>
     <div class="count" id="count"></div>
   </div>
@@ -112,7 +112,7 @@
   <div class="ov-bar">
     <div class="ov-title" id="ovTitle"></div>
     <a class="ov-btn" id="ovNew" target="_blank" rel="noopener">Open in new tab</a>
-    <button class="ov-btn" id="ovClose">Close âœ•</button>
+    <button class="ov-btn" id="ovClose">Close &#10005;</button>
   </div>
   <iframe id="frame" allow="fullscreen; autoplay; gamepad; clipboard-write; encrypted-media" allowfullscreen></iframe>
 </div>
@@ -177,7 +177,7 @@ function render(){
 
   empty.style.display = total ? 'none' : 'block';
   countEl.textContent = total + ' / ' + GAMES.length + ' games';
-  document.getElementById('foot').textContent = GAMES.length + ' games Â· ' + ORDER.filter(g => GAMES.some(x => x.g === g)).length + ' groups Â· 17 archives';
+  document.getElementById('foot').textContent = GAMES.length + ' games \u00b7 ' + ORDER.filter(g => GAMES.some(x => x.g === g)).length + ' groups \u00b7 17 archives';
 }
 
 function openGame(x){
