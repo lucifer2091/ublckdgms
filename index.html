@@ -3,20 +3,57 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f4ee">
+<script>
+(function(){
+  var t = null;
+  try { t = localStorage.getItem('margins:theme'); } catch (e) {}
+  var dark = t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (dark) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#17140f');
+  }
+})();
+</script>
 <title>Margins</title>
 <style>
 :root{
+  color-scheme:light;
   --paper:#f7f4ee;
   --card:#fffdf9;
   --ink:#1a1917;
   --muted:#6f6961;
   --faint:#a49c90;
   --rule:#e2dbcf;
+  --edge:#cdc3b2;
+  --hover:#ffffff;
+  --press:#f2ece0;
+  --focus:#c2b7a4;
+  --dot:#cec5b6;
+  --wash:#f8e9df;
+  --sel:#eadfc9;
   --accent:#b4451f;
   --serif:Georgia,"Iowan Old Style","Times New Roman",Times,serif;
   --head:"Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
   --fast:120ms;
   --ease:cubic-bezier(.2,.65,.3,1);
+}
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#17140f;
+  --card:#1e1a14;
+  --ink:#e7dfd1;
+  --muted:#b0a494;
+  --faint:#877c6c;
+  --rule:#332c23;
+  --edge:#4a4034;
+  --hover:#24201a;
+  --press:#2a251d;
+  --focus:#574a3a;
+  --dot:#453d31;
+  --wash:#33241b;
+  --sel:#3a3126;
+  --accent:#dd8a62;
 }
 *{box-sizing:border-box}
 html{
@@ -39,6 +76,7 @@ body{
   padding:0 clamp(16px, 2.4vw, 40px);
 }
 a{color:inherit}
+::selection{background:var(--sel);color:var(--ink)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 header{border-bottom:1px solid var(--rule)}
@@ -58,6 +96,31 @@ header{border-bottom:1px solid var(--rule)}
   font-size:.78rem;color:var(--faint);white-space:nowrap;
   transition:opacity var(--fast) linear;
 }
+.shift{
+  display:inline-flex;align-items:center;gap:.45rem;
+  background:none;border:0;padding:0;margin:0;cursor:pointer;
+  font:inherit;font-style:italic;font-size:.78rem;
+  color:var(--faint);white-space:nowrap;
+  transition:color var(--fast) linear;
+}
+.shift:hover{color:var(--muted)}
+.shift[aria-pressed="true"]{color:var(--muted)}
+.shift .track{
+  position:relative;flex:none;
+  width:1.9rem;height:1.05rem;
+  border:1px solid var(--rule);border-radius:2px;
+  background:var(--card);
+  transition:background-color 160ms linear,border-color 160ms linear;
+}
+.shift .knob{
+  position:absolute;top:2px;left:2px;
+  width:calc(1.05rem - 6px);height:calc(1.05rem - 6px);
+  border-radius:1px;background:var(--faint);
+  transition:transform 180ms var(--ease),background-color 160ms linear;
+}
+.shift:hover .track{border-color:var(--edge)}
+.shift[aria-pressed="true"] .track{background:var(--wash);border-color:var(--accent)}
+.shift[aria-pressed="true"] .knob{transform:translateX(.85rem);background:var(--accent)}
 .search input{
   width:clamp(130px, 18vw, 220px);
   padding:.34rem .5rem;
@@ -66,7 +129,7 @@ header{border-bottom:1px solid var(--rule)}
   font:inherit;font-size:.84rem;outline:none;
   transition:border-color var(--fast) linear, background-color var(--fast) linear;
 }
-.search input:focus{border-color:#c2b7a4;background:#fff}
+.search input:focus{border-color:var(--focus);background:var(--hover)}
 .search input::placeholder{color:var(--faint)}
 
 .intro{padding:clamp(24px, 2.3rem, 40px) 0 .25rem;max-width:40rem}
@@ -82,7 +145,7 @@ header{border-bottom:1px solid var(--rule)}
   padding:0;list-style:none;
 }
 .filters li{margin:0 0 .38rem}
-.filters li + li::before{content:"\00b7";color:#cec5b6;padding:0 .62rem}
+.filters li + li::before{content:"\00b7";color:var(--dot);padding:0 .62rem}
 .filters button{
   background:none;border:0;padding:0 0 1px;margin:0;cursor:pointer;
   font:inherit;font-size:.87rem;color:var(--muted);
@@ -114,8 +177,8 @@ header{border-bottom:1px solid var(--rule)}
   background:var(--card);text-decoration:none;
   transition:background-color var(--fast) linear, border-color var(--fast) linear;
 }
-.card:hover{border-color:#cdc3b2;background:#fff}
-.card:active{background:#f2ece0}
+.card:hover{border-color:var(--edge);background:var(--hover)}
+.card:active{background:var(--press)}
 .card h3{margin:0;flex:1;font-size:.94rem;font-weight:400;line-height:1.35}
 .card .sz{
   font-family:var(--serif);font-style:italic;
@@ -177,6 +240,12 @@ body.locked{overflow:hidden}
   .ov-bar{gap:.7rem;font-size:.72rem}
 }
 
+html.theming body,html.theming body *{
+  transition:background-color .22s linear,border-color .22s linear,color .22s linear !important;
+}
+html.theming .shift .knob{transition:transform 180ms var(--ease),background-color .22s linear !important}
+html.theming #overlay,html.theming #overlay *{transition:none !important}
+
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{
     animation-duration:.01ms !important;
@@ -193,6 +262,7 @@ body.locked{overflow:hidden}
     <div class="brand">Margins<i>.</i></div>
     <div class="grow"></div>
     <div class="count" id="count"></div>
+    <button class="shift" id="shift" type="button" aria-pressed="false"><span class="track"><span class="knob"></span></span><span>night shift</span></button>
     <div class="search"><input id="q" type="search" placeholder="search" autocomplete="off" spellcheck="false"></div>
   </div>
 </header>
@@ -345,6 +415,39 @@ document.addEventListener('keydown', e => {
 });
 
 $('q').addEventListener('input', e => { term = e.target.value; render(); });
+
+const shiftBtn = $('shift');
+const rootEl = document.documentElement;
+const themeMeta = document.querySelector('meta[name="theme-color"]');
+const THEME_KEY = 'margins:theme';
+let themeTimer = null;
+
+function isNight() {
+  return rootEl.getAttribute('data-theme') === 'dark';
+}
+
+function syncShift() {
+  shiftBtn.setAttribute('aria-pressed', isNight() ? 'true' : 'false');
+  if (themeMeta) themeMeta.setAttribute('content', isNight() ? '#17140f' : '#f7f4ee');
+}
+
+shiftBtn.onclick = () => {
+  const dark = !isNight();
+  if (dark) rootEl.setAttribute('data-theme', 'dark');
+  else rootEl.removeAttribute('data-theme');
+
+  try { localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light'); } catch (e) {}
+
+  syncShift();
+
+  if (!REDUCED) {
+    rootEl.classList.add('theming');
+    clearTimeout(themeTimer);
+    themeTimer = setTimeout(() => rootEl.classList.remove('theming'), 280);
+  }
+};
+
+syncShift();
 
 render();
 </script>
