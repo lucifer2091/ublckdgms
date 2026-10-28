@@ -3,16 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#f7f4ee">
+<meta name="theme-color" content="#17140f">
 <script>
 (function(){
   var t = null;
   try { t = localStorage.getItem('margins:theme'); } catch (e) {}
-  var dark = t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (dark) {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#17140f');
-  }
+  var dark = t !== 'light';
+  if (dark) document.documentElement.setAttribute('data-theme', 'dark');
+  else document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f7f4ee');
 })();
 </script>
 <title>Margins</title>
