@@ -137,6 +137,21 @@ header{border-bottom:1px solid var(--rule)}
   font-size:.8rem;color:var(--faint);
 }
 
+.recent{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:.3rem .55rem;
+  margin:clamp(14px,1.4rem,24px) 0 0;
+}
+.recent[hidden]{display:none}
+.recent-lab{font-style:italic;font-size:.78rem;color:var(--faint)}
+.recent-list{display:flex;flex-wrap:wrap;margin:0;padding:0;list-style:none}
+.recent-list li{margin:0}
+.recent-list li + li::before{content:"\00b7";color:var(--dot);padding:0 .5rem}
+.recent-list a{
+  color:var(--muted);text-decoration:none;font-size:.86rem;
+  transition:color var(--fast) linear;
+}
+.recent-list a:hover{color:var(--ink)}
+
 .filters{
   display:flex;flex-wrap:wrap;
   margin:clamp(18px, 1.7rem, 30px) 0 clamp(22px, 2rem, 36px);
@@ -151,6 +166,10 @@ header{border-bottom:1px solid var(--rule)}
 }
 .filters button:hover{color:var(--ink)}
 .filters button.on{color:var(--ink);font-weight:600;box-shadow:inset 0 -1px 0 var(--accent)}
+.filters .shuffle{font-style:italic;color:var(--faint)}
+.filters .shuffle:hover{color:var(--ink)}
+.filters .shuffle:disabled{opacity:.4;cursor:default}
+.filters .shuffle:disabled:hover{color:var(--faint)}
 
 .sect{margin:0 0 clamp(24px, 2.3rem, 40px)}
 .sect-head{display:flex;align-items:baseline;gap:.55rem;margin:0 0 .7rem}
@@ -215,15 +234,22 @@ main.wrap{padding-bottom:clamp(30px, 3.2rem, 60px)}
 }
 #overlay.open .ov-bar{transform:none}
 .ov-title{
-  flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  flex:1;min-width:0;display:flex;align-items:baseline;gap:.5rem;
   font-family:var(--head);font-size:.97rem;
 }
+.ov-title #ovName{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ov-note{
+  flex:none;font-family:var(--serif);font-style:italic;
+  font-size:.76rem;color:#8a847b;
+}
+.ov-note[hidden]{display:none}
 .ov-bar a,.ov-bar button{
   background:none;border:0;padding:0;cursor:pointer;font:inherit;
   color:#a39d94;text-decoration:none;white-space:nowrap;
   transition:color var(--fast) linear;
 }
 .ov-bar a:hover,.ov-bar button:hover{color:#fff}
+.ov-bar button.done{color:#e9e5dd}
 #frame{
   flex:1;width:100%;border:0;background:#000;
   opacity:0;transition:opacity .2s ease-out;
@@ -236,6 +262,7 @@ body.locked{overflow:hidden}
   .search{flex:1 1 100%;order:3}
   .search input{width:100%}
   .ov-bar{gap:.7rem;font-size:.72rem}
+  #ovFull{display:none}
 }
 
 html.theming body,html.theming body *{
@@ -271,6 +298,11 @@ html.theming #overlay,html.theming #overlay *{transition:none !important}
     <div class="stamp">checked 27 oct 2026 &middot; some games take a minute to load</div>
   </div>
 
+  <div class="recent" id="recent" hidden>
+    <span class="recent-lab">recently played</span>
+    <ul class="recent-list" id="recentList"></ul>
+  </div>
+
   <ul class="filters" id="filters"></ul>
 
   <div id="sections"></div>
@@ -279,9 +311,11 @@ html.theming #overlay,html.theming #overlay *{transition:none !important}
 
 <div id="overlay">
   <div class="ov-bar">
-    <div class="ov-title" id="ovTitle"></div>
+    <div class="ov-title" id="ovTitle"><span id="ovName"></span><span class="ov-note" id="ovNote" hidden>loading</span></div>
+    <button id="ovCopy" type="button">copy link</button>
+    <button id="ovFull" type="button">fullscreen</button>
     <a id="ovNew" target="_blank" rel="noopener noreferrer">new tab</a>
-    <button id="ovClose">close</button>
+    <button id="ovClose" type="button">close</button>
   </div>
   <iframe id="frame" allow="fullscreen; autoplay; gamepad; clipboard-write; encrypted-media" allowfullscreen></iframe>
 </div>
@@ -296,7 +330,9 @@ const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const $ = id => document.getElementById(id);
 const listEl = $('sections'), emptyEl = $('empty'), countEl = $('count'), filterEl = $('filters');
-const overlay = $('overlay'), frame = $('frame'), ovTitle = $('ovTitle'), ovNew = $('ovNew');
+const overlay = $('overlay'), frame = $('frame'), ovName = $('ovName'), ovNote = $('ovNote'), ovNew = $('ovNew');
+const ovCopy = $('ovCopy'), ovFull = $('ovFull');
+const RECENT_KEY = 'margins:recent';
 
 const PRESENT = ORDER.filter(g => GAMES.some(x => x.g === g));
 
@@ -316,6 +352,26 @@ const PRESENT = ORDER.filter(g => GAMES.some(x => x.g === g));
   filterEl.appendChild(li);
 });
 
+const shuffleLi = document.createElement('li');
+const shuffleBtn = document.createElement('button');
+shuffleBtn.type = 'button';
+shuffleBtn.className = 'shuffle';
+shuffleBtn.textContent = 'shuffle';
+shuffleBtn.title = 'pick one at random';
+shuffleBtn.onclick = () => {
+  const q = term.trim().toLowerCase();
+  const pool = GAMES.filter(x => !x.d && (group === 'All' || x.g === group) && matches(x, q));
+  if (!pool.length) return;
+  openGame(pool[Math.floor(Math.random() * pool.length)]);
+};
+shuffleLi.appendChild(shuffleBtn);
+filterEl.appendChild(shuffleLi);
+
+function matches(x, q) {
+  if (!q) return true;
+  return x.n.toLowerCase().includes(q) || x.g.toLowerCase().includes(q);
+}
+
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -327,7 +383,7 @@ function render() {
 
   ORDER.forEach(g => {
     if (group !== 'All' && group !== g) return;
-    const items = GAMES.filter(x => x.g === g && (!q || x.n.toLowerCase().includes(q)));
+    const items = GAMES.filter(x => x.g === g && matches(x, q));
     if (!items.length) return;
     shown += items.length;
 
@@ -363,6 +419,9 @@ function render() {
   emptyEl.style.display = shown ? 'none' : 'block';
   countEl.textContent = shown === GAMES.length ? GAMES.length + ' games' : shown + ' of ' + GAMES.length;
 
+  const pool = GAMES.filter(x => !x.d && (group === 'All' || x.g === group) && matches(x, q));
+  shuffleBtn.disabled = pool.length === 0;
+
   if (settleNext && !REDUCED) {
     listEl.animate(
       [{ opacity: .55 }, { opacity: 1 }],
@@ -370,6 +429,45 @@ function render() {
     );
   }
   settleNext = false;
+  renderRecent();
+}
+
+function readRecent() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+    if (!Array.isArray(raw)) return [];
+    return raw.filter(n => GAMES.some(g => g.n === n && !g.d));
+  } catch (e) {
+    return [];
+  }
+}
+
+function pushRecent(name) {
+  const list = readRecent().filter(n => n !== name);
+  list.unshift(name);
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, 5))); } catch (e) {}
+  renderRecent();
+}
+
+function renderRecent() {
+  const list = readRecent();
+  const show = list.length > 0 && group === 'All' && !term.trim();
+  $('recent').hidden = !show;
+  if (!show) return;
+
+  const ul = $('recentList');
+  ul.innerHTML = '';
+  list.forEach(n => {
+    const x = GAMES.find(g => g.n === n);
+    if (!x) return;
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = x.u;
+    a.textContent = n;
+    a.onclick = ev => { ev.preventDefault(); openGame(x); };
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
 }
 
 let closeTimer = null;
@@ -378,7 +476,8 @@ let fadeTimer = null;
 function openGame(x) {
   clearTimeout(closeTimer);
   clearTimeout(fadeTimer);
-  ovTitle.textContent = x.n;
+  ovName.textContent = x.n;
+  ovNote.hidden = false;
   ovNew.href = x.u;
   frame.classList.remove('ready');
   frame.src = x.u;
@@ -386,11 +485,13 @@ function openGame(x) {
   document.body.classList.add('locked');
   fadeTimer = setTimeout(() => frame.classList.add('ready'), 350);
   history.replaceState(null, '', '#play=' + encodeURIComponent(x.n));
+  pushRecent(x.n);
 }
 
 function closeGame() {
   clearTimeout(fadeTimer);
   overlay.classList.remove('open');
+  ovNote.hidden = true;
   document.body.classList.remove('locked');
   frame.classList.remove('ready');
   clearTimeout(closeTimer);
@@ -401,11 +502,19 @@ function closeGame() {
 $('ovClose').onclick = closeGame;
 
 frame.addEventListener('load', () => {
+  ovNote.hidden = true;
   if (overlay.classList.contains('open')) frame.classList.add('ready');
 });
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && overlay.classList.contains('open')) closeGame();
+  if (e.key === 'Escape') {
+    if (overlay.classList.contains('open')) closeGame();
+    else if (document.activeElement === $('q') && term) {
+      $('q').value = '';
+      term = '';
+      render();
+    }
+  }
   if (e.key === '/' && document.activeElement !== $('q')) {
     e.preventDefault();
     $('q').focus();
@@ -413,6 +522,66 @@ document.addEventListener('keydown', e => {
 });
 
 $('q').addEventListener('input', e => { term = e.target.value; render(); });
+
+let copyTimer = null;
+ovCopy.onclick = () => {
+  const url = location.href;
+  const done = () => {
+    ovCopy.textContent = 'copied';
+    ovCopy.classList.add('done');
+    clearTimeout(copyTimer);
+    copyTimer = setTimeout(() => {
+      ovCopy.textContent = 'copy link';
+      ovCopy.classList.remove('done');
+    }, 1400);
+  };
+  const fallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:-1000px;left:0;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    ta.remove();
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(done, fallback);
+  } else {
+    fallback();
+  }
+};
+
+if (!frame.requestFullscreen && !frame.webkitRequestFullscreen) {
+  ovFull.hidden = true;
+} else {
+  ovFull.onclick = () => {
+    const el = document.fullscreenElement || document.webkitFullscreenElement;
+    if (el) {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if (exit) exit.call(document);
+      return;
+    }
+    const req = frame.requestFullscreen || frame.webkitRequestFullscreen;
+    try {
+      const p = req.call(frame);
+      if (p && p.catch) p.catch(() => {});
+    } catch (e) {}
+  };
+}
+
+function openFromHash() {
+  const m = /^#play=(.+)$/.exec(location.hash);
+  if (!m) return;
+  let name = '';
+  try { name = decodeURIComponent(m[1]); } catch (e) { return; }
+  const x = GAMES.find(g => g.n === name);
+  if (x && !x.d) openGame(x);
+}
+
+window.addEventListener('hashchange', () => {
+  if (!overlay.classList.contains('open')) openFromHash();
+});
 
 const shiftBtn = $('shift');
 const rootEl = document.documentElement;
@@ -448,6 +617,7 @@ shiftBtn.onclick = () => {
 syncShift();
 
 render();
+openFromHash();
 </script>
 </body>
 </html>
