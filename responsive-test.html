@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>responsive check</title>
+<style>
+  body{font:13px/1.5 monospace;background:#111;color:#ddd;margin:0;padding:12px}
+  table{border-collapse:collapse;width:100%}
+  td,th{border:1px solid #333;padding:4px 7px;text-align:left;white-space:nowrap}
+  iframe{border:1px solid #444;height:600px}
+  .row{display:flex;gap:10px;overflow:auto;margin-top:10px}
+</style>
+</head>
+<body>
+<div id="out">measuring...</div>
+<div class="row" id="frames"></div>
+<script>
+const SIZES = [360, 390, 600, 768, 1024, 1366, 1920, 2560];
+const frames = document.getElementById('frames');
+
+function measure(w, cb) {
+  const f = document.createElement('iframe');
+  f.style.width = w + 'px';
+  f.src = '/ublckdgms/?m=' + w;
+  f.onload = () => {
+    setTimeout(() => {
+      try {
+        const d = f.contentWindow.document;
+        const cs = f.contentWindow.getComputedStyle;
+        const de = d.documentElement;
+        const cards = [...d.querySelectorAll('.card')];
+        const grid = d.querySelector('.grid');
+        const card = cards[0];
+        const cols = grid ? cs(grid).gridTemplateColumns.split(' ').length : 0;
+        const row = {
+          w,
+          root: parseFloat(cs(de).fontSize).toFixed(2),
+          body: parseFloat(cs(d.body).fontSize).toFixed(2),
+          cardFont: parseFloat(cs(card).fontSize).toFixed(2),
+          cardW: Math.round(card.offsetWidth),
+          cols,
+          overflow: de.scrollWidth - de.clientWidth,
+          brand: parseFloat(cs(d.querySelector('.brand')).fontSize).toFixed(2),
+          headerH: Math.round(d.querySelector('.top').offsetHeight)
+        };
+        cb(row);
+      } catch (e) {
+        cb({ w, error: String(e).slice(0, 60) });
+      }
+    }, 900);
+  };
+  frames.appendChild(f);
+}
+
+const rows = [];
+let i = 0;
+(function next() {
+  if (i >= SIZES.length) {
+    const head = '<tr><th>viewport</th><th>root</th><th>body</th><th>card text</th><th>card w</th><th>cols</th><th>brand</th><th>header h</th><th>overflow</th></tr>';
+    const body = rows.map(r => r.error
+      ? '<tr><td>' + r.w + '</td><td colspan="8">' + r.error + '</td></tr>'
+      : '<tr><td>' + r.w + '</td><td>' + r.root + '</td><td>' + r.body + '</td><td>' + r.cardFont + '</td><td>' + r.cardW + '</td><td>' + r.cols + '</td><td>' + r.brand + '</td><td>' + r.headerH + '</td><td>' + (r.overflow > 0 ? 'YES ' + r.overflow : 'no') + '</td></tr>'
+    ).join('');
+    document.getElementById('out').innerHTML = '<table>' + head + body + '</table>';
+    window.__done = rows;
+    return;
+  }
+  measure(SIZES[i++], r => { rows.push(r); next(); });
+})();
+</script>
+</body>
+</html>
