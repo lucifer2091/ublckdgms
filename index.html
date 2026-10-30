@@ -157,8 +157,9 @@ header{border-bottom:1px solid var(--rule)}
   margin:clamp(18px, 1.7rem, 30px) 0 clamp(22px, 2rem, 36px);
   padding:0;list-style:none;
 }
-.filters li{margin:0 0 .38rem}
-.filters li + li::before{content:"\00b7";color:var(--dot);padding:0 .62rem}
+.filters li{margin:0 0 .38rem;white-space:nowrap}
+.filters li:not(:last-child)::after{content:"\00b7";color:var(--dot);padding:0 .62rem}
+.filters li + li::before{content:none}
 .filters button{
   background:none;border:0;padding:0 0 1px;margin:0;cursor:pointer;
   font:inherit;font-size:.87rem;color:var(--muted);
@@ -184,31 +185,124 @@ header{border-bottom:1px solid var(--rule)}
 .sect-head .rule{flex:1;height:1px;background:var(--rule);transform:translateY(-.25rem)}
 
 .grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(15.5rem, 1fr));
-  gap:.45rem;
+  display:flex;flex-wrap:wrap;align-items:stretch;
+  gap:.5rem;
 }
 .card{
-  display:flex;align-items:baseline;gap:.55rem;
-  padding:.56rem .7rem;border:1px solid var(--rule);border-radius:3px;
-  background:var(--card);text-decoration:none;
-  transition:background-color var(--fast) linear, border-color var(--fast) linear;
+  position:relative;display:block;
+  flex:0 1 auto;
+  width:calc(7.4rem + var(--chars) * .40rem);
+  min-width:13.6rem;max-width:26.5rem;
+  aspect-ratio:3.15/1;
+  min-height:5.2rem;max-height:9.4rem;
+  border-radius:3px;
+  background:#12141a;
+  text-decoration:none;
+  overflow:hidden;
+  isolation:isolate;
+  transition:box-shadow 150ms linear;
 }
-.card:hover{border-color:var(--edge);background:var(--hover)}
-.card:active{background:var(--press)}
-.card h3{margin:0;flex:1;font-size:.94rem;font-weight:400;line-height:1.35}
-.card .sz{
+.card:hover{box-shadow:0 0 0 1px rgba(232,225,210,.30)}
+.card:active{box-shadow:0 0 0 1px rgba(232,225,210,.45)}
+
+.card__in{
+  position:relative;display:block;width:100%;height:100%;
+  container-type:inline-size;
+}
+
+.card__art{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center;
+  filter:saturate(.88) contrast(1.04) brightness(.96);
+  transition:filter 160ms linear;
+}
+.card:hover .card__art{filter:saturate(.96) contrast(1.05) brightness(1.03)}
+
+/* scrim: darkens the left where the title sits, and the outer edges */
+.card::before{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    linear-gradient(90deg, rgba(8,9,12,.95) 0%, rgba(8,9,12,.93) 30%, rgba(8,9,12,.90) 50%, rgba(8,9,12,.80) 62%, rgba(8,9,12,.34) 80%, rgba(8,9,12,.58) 100%),
+    radial-gradient(42% 100% at 94% 50%, rgba(8,9,12,.62) 0%, rgba(8,9,12,.36) 55%, rgba(8,9,12,0) 100%),
+    linear-gradient(0deg, rgba(8,9,12,.62) 0%, rgba(8,9,12,0) 42%, rgba(8,9,12,.22) 100%);
+  box-shadow:inset 0 0 2.2rem rgba(0,0,0,.55);
+}
+.card.plate::before{
+  background:radial-gradient(130% 150% at 18% 46%, rgba(62,58,50,.52) 0%, rgba(24,21,17,.72) 52%, rgba(12,10,8,.92) 100%);
+}
+.card.plate{background:radial-gradient(120% 130% at 24% 42%, #2b2721 0%, #1a1713 48%, #0e0c0a 100%)}
+
+/* on phones the banners run full width, like the reference */
+@media (max-width:560px){
+  .card{flex:1 1 100%;width:100%;min-width:0;max-width:none}
+}
+
+/* frame: 9-slice so corners stay crisp at any width */
+.card__f{
+  position:absolute;z-index:3;pointer-events:none;
+  inset:clamp(3px, 1.9cqw, 9px);
+  border:12px solid transparent;
+  border-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='%23eae3d4' stroke-width='1.45' stroke-linecap='round'><path d='M6.2 .5H41.8A5.7 5.7 0 0 1 47.5 6.2V41.8A5.7 5.7 0 0 1 41.8 47.5H6.2A5.7 5.7 0 0 1 .5 41.8V6.2A5.7 5.7 0 0 1 6.2 .5Z'/><path stroke-width='.95' d='M6.2 3.5H41.8A2.7 2.7 0 0 1 44.5 6.2V41.8A2.7 2.7 0 0 1 41.8 44.5H6.2A2.7 2.7 0 0 1 3.5 41.8V6.2A2.7 2.7 0 0 1 6.2 3.5Z' opacity='.22'/></svg>") 16 fill / 1 / 0 stretch;
+  opacity:.82;
+  transition:opacity 150ms linear;
+}
+.card:hover .card__f{opacity:1}
+
+/* small jewels straddling the frame at top and bottom centre */
+.card__f::before,.card__f::after{
+  content:"";position:absolute;left:50%;
+  width:.3rem;height:.3rem;
+  background:rgba(234,227,212,.8);
+  transform:translateX(-50%) rotate(45deg);
+}
+.card__f::before{top:-.24rem}
+.card__f::after{bottom:-.24rem}
+
+.card__t{
+  position:absolute;z-index:2;
+  left:.95rem;right:34%;top:50%;
+  transform:translateY(-50%);
+  margin:0;
+  font-family:var(--head);
+  font-size:clamp(.88rem, 5.4cqw, 1.5rem);
+  font-weight:500;line-height:1.14;letter-spacing:.008em;
+  color:#f1ebdf;
+  text-shadow:0 1px 3px rgba(0,0,0,.85), 0 0 12px rgba(0,0,0,.55);
+  overflow-wrap:break-word;
+  text-wrap:pretty;
+}
+.nw{white-space:nowrap}
+.card__s{
+  position:absolute;z-index:2;
+  right:.95rem;top:50%;transform:translateY(-50%);
   font-family:var(--serif);font-style:italic;
-  font-size:.78rem;color:var(--faint);white-space:nowrap;
-  transition:color var(--fast) linear;
+  font-size:clamp(.68rem, 2.75cqw, .86rem);
+  color:rgba(241,235,223,.92);
+  white-space:nowrap;
+  text-shadow:0 1px 4px rgba(0,0,0,.95), 0 0 10px rgba(0,0,0,.7);
+  transition:color 150ms linear;
 }
-.card:hover .sz{color:var(--muted)}
-.card.dl .sz{color:var(--accent)}
-.card.dl h3::after{
-  content:"\2193";color:var(--accent);margin-left:.3rem;font-size:.85em;
-  display:inline-block;transition:transform var(--fast) var(--ease);
+.card:hover .card__s{color:rgba(241,235,223,.82)}
+.card.dl .card__s{color:#e8a07a}
+
+.card__mark{
+  position:absolute;z-index:0;
+  right:.3rem;bottom:-.28em;
+  font-family:var(--head);font-weight:700;
+  font-size:clamp(3.6rem, 26cqw, 7rem);
+  line-height:.8;
+  color:rgba(232,225,210,.11);
+  letter-spacing:-.02em;
+  user-select:none;
 }
-.card.dl:hover h3::after{transform:translateY(.12em)}
+.card.plate .card__mark{z-index:2;color:rgba(232,225,210,.10)}
+
+.card.dl .card__t::after{
+  content:"\2193";color:#e8a07a;margin-left:.28rem;font-size:.8em;
+  display:inline-block;
+  transition:transform var(--fast) var(--ease);
+}
+.card.dl:hover .card__t::after{transform:translateY(.12em)}
 
 .empty{padding:2.8rem 0 3.6rem;color:var(--faint);font-size:.9rem;display:none}
 
@@ -321,8 +415,8 @@ html.theming #overlay,html.theming #overlay *{transition:none !important}
 </div>
 
 <script>
-const GAMES = [{"n":"1v1.LOL","g":"Action \u0026 Shooters","s":94,"u":"https://lucifer2091.github.io/ublckdgms-15/1v1lol/","d":false},{"n":"Ace Attorney Investigations: Miles Edgeworth","g":"Emulators","s":64,"u":"https://lucifer2091.github.io/ublckdgms-16/miles-edgeworth/","d":false},{"n":"Angry Birds Chrome","g":"Puzzle \u0026 Strategy","s":136,"u":"https://lucifer2091.github.io/ublckdgms-14/angry-birds/","d":false},{"n":"Ape Escape","g":"Emulators","s":413,"u":"https://lucifer2091.github.io/ublckdgms-09/ape-escape/","d":false},{"n":"Apollo Justice: Ace Attorney","g":"Emulators","s":64,"u":"https://lucifer2091.github.io/ublckdgms-16/apollo-justice/","d":false},{"n":"Bad Piggies","g":"Puzzle \u0026 Strategy","s":71,"u":"https://lucifer2091.github.io/ublckdgms-15/bad-piggies/","d":false},{"n":"Balatro","g":"Puzzle \u0026 Strategy","s":120,"u":"https://lucifer2091.github.io/ublckdgms-15/balatrojs/","d":false},{"n":"Baldi\u0027s Basics Classic Remastered","g":"Horror","s":85,"u":"https://lucifer2091.github.io/ublckdgms-15/baldis-basics/","d":false},{"n":"Banjo-Kazooie","g":"Emulators","s":16,"u":"https://lucifer2091.github.io/ublckdgms-16/banjo-kazooie/","d":false},{"n":"BitLife - Life Simulator","g":"Simulation \u0026 Idle","s":20,"u":"https://lucifer2091.github.io/ublckdgms-06/bitlife/","d":false},{"n":"Bloons TD 5","g":"Puzzle \u0026 Strategy","s":11,"u":"https://lucifer2091.github.io/ublckdgms-16/bloons-td5/","d":false},{"n":"Bloxorz","g":"Puzzle \u0026 Strategy","s":2,"u":"https://lucifer2091.github.io/ublckdgms-09/flashgames-bloxorz/","d":false},{"n":"Buckshot Roulette","g":"Action \u0026 Shooters","s":371,"u":"https://lucifer2091.github.io/ublckdgms-09/buckshot-roulette/","d":false},{"n":"Class of \u002709","g":"Horror","s":768,"u":"https://lucifer2091.github.io/ublckdgms-02/birdseed-c009/","d":false},{"n":"Cookie Clicker","g":"Simulation \u0026 Idle","s":12,"u":"https://lucifer2091.github.io/ublckdgms-16/cookieclicker/","d":false},{"n":"Cuphead","g":"Download Only","s":1295,"u":"https://github.com/lucifer2091/trans-2W/tree/main/cuphead","d":true},{"n":"Deltarune - Chapter 1","g":"Deltarune","s":225,"u":"https://lucifer2091.github.io/ublckdgms-03/deltarune-1/","d":false},{"n":"Deltarune - Chapter 2","g":"Deltarune","s":283,"u":"https://lucifer2091.github.io/ublckdgms-12/deltarune-2/","d":false},{"n":"Deltarune - Chapter 3","g":"Deltarune","s":359,"u":"https://lucifer2091.github.io/ublckdgms-10/deltarune-3/","d":false},{"n":"Deltarune - Chapter 4","g":"Deltarune","s":351,"u":"https://lucifer2091.github.io/ublckdgms-11/deltarune-4/","d":false},{"n":"Deltarune - Chapter 5","g":"Deltarune","s":482,"u":"https://lucifer2091.github.io/ublckdgms-08/deltarune-5/","d":false},{"n":"Doki Doki Literature Club!","g":"Horror","s":239,"u":"https://lucifer2091.github.io/ublckdgms-13/ddlc/","d":false},{"n":"Donkey Kong 64","g":"Emulators","s":32,"u":"https://lucifer2091.github.io/ublckdgms-08/donkey-kong-64/","d":false},{"n":"Donkey Kong Country 2","g":"Emulators","s":4,"u":"https://lucifer2091.github.io/ublckdgms-16/donkey-kong-country-2/","d":false},{"n":"Eaglercraft 1.12.2 (Client / JS)","g":"Minecraft","s":77,"u":"https://lucifer2091.github.io/ublckdgms-13/eaglercraft-1.12.2-js/","d":false},{"n":"Eaglercraft 1.12.2 (Client / WASM)","g":"Minecraft","s":24,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.12.2-wasm/","d":false},{"n":"Eaglercraft 1.12.2 (Web / JS)","g":"Minecraft","s":89,"u":"https://lucifer2091.github.io/ublckdgms-15/eaglercraft-1.12.2-web-js/","d":false},{"n":"Eaglercraft 1.12.2 (Web / WASM)","g":"Minecraft","s":18,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.12.2-web-wasm/","d":false},{"n":"Eaglercraft 1.16.5 (Client / WASM)","g":"Minecraft","s":44,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.16.5-wasm/","d":false},{"n":"Eaglercraft 1.16.5 (Web / WASM)","g":"Minecraft","s":34,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.16.5-web-wasm/","d":false},{"n":"Eaglercraft 1.21.11 (Client / WASM)","g":"Minecraft","s":46,"u":"https://lucifer2091.github.io/ublckdgms-15/eaglercraft-1.21.11-wasm/","d":false},{"n":"Eaglercraft 1.8.8 (Client / JS)","g":"Minecraft","s":17,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.8.8-js/","d":false},{"n":"Eaglercraft 1.8.8 (Client / WASM)","g":"Minecraft","s":14,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.8.8-wasm/","d":false},{"n":"Escape Road","g":"Racing \u0026 Sports","s":232,"u":"https://lucifer2091.github.io/ublckdgms-13/escape-road/","d":false},{"n":"False Frights","g":"Horror","s":209,"u":"https://lucifer2091.github.io/ublckdgms-13/false-frights/","d":false},{"n":"Fears to Fathom: Home Alone","g":"Horror","s":786,"u":"https://lucifer2091.github.io/ublckdgms-01/fears-to-fathom/","d":false},{"n":"Five Night\u0027s at BIG E","g":"Five Nights at Freddy\u0027s","s":156,"u":"https://lucifer2091.github.io/ublckdgms-01/fnae/","d":false},{"n":"Five Nights at Freddy\u0027s 1","g":"Five Nights at Freddy\u0027s","s":164,"u":"https://lucifer2091.github.io/ublckdgms-09/fnaf-1/","d":false},{"n":"Five Nights at Freddy\u0027s 2","g":"Five Nights at Freddy\u0027s","s":180,"u":"https://lucifer2091.github.io/ublckdgms-02/fnaf-2/","d":false},{"n":"Five Nights at Freddy\u0027s 3","g":"Five Nights at Freddy\u0027s","s":185,"u":"https://lucifer2091.github.io/ublckdgms-14/fnaf-3/","d":false},{"n":"Five Nights at Freddy\u0027s 4","g":"Five Nights at Freddy\u0027s","s":344,"u":"https://lucifer2091.github.io/ublckdgms-11/fnaf-4/","d":false},{"n":"Five Nights at Freddy\u0027s Pizzeria Simulator","g":"Five Nights at Freddy\u0027s","s":362,"u":"https://lucifer2091.github.io/ublckdgms-07/fnaf-pizzeria-simulator/","d":false},{"n":"Five Nights at Freddy\u0027s Sister Location","g":"Five Nights at Freddy\u0027s","s":703,"u":"https://lucifer2091.github.io/ublckdgms-04/fnaf-sister-location/","d":false},{"n":"Five Nights at Freddy\u0027s Ultimate Custom Night","g":"Five Nights at Freddy\u0027s","s":314,"u":"https://lucifer2091.github.io/ublckdgms-12/fnaf-ucn/","d":false},{"n":"Five Nights at Freddy\u0027s World","g":"Five Nights at Freddy\u0027s","s":254,"u":"https://lucifer2091.github.io/ublckdgms-11/fnaf-world/","d":false},{"n":"Funny Shooter","g":"Action \u0026 Shooters","s":80,"u":"https://lucifer2091.github.io/ublckdgms-15/funny-shooter/","d":false},{"n":"FX Client","g":"Minecraft","s":1,"u":"https://lucifer2091.github.io/ublckdgms-02/fxclient/","d":false},{"n":"Grand Theft Auto: Vice City","g":"Action \u0026 Shooters","s":0,"u":"https://lucifer2091.github.io/ublckdgms-01/gtavc/","d":false},{"n":"Granny","g":"Horror","s":587,"u":"https://lucifer2091.github.io/ublckdgms-07/granny/","d":false},{"n":"Half-Life","g":"Action \u0026 Shooters","s":238,"u":"https://lucifer2091.github.io/ublckdgms-10/half-life/","d":false},{"n":"Happy Wheels","g":"Flash Classics","s":4,"u":"https://lucifer2091.github.io/ublckdgms-16/flashgames-happywheels/","d":false},{"n":"Hollow Knight","g":"Platformers","s":952,"u":"https://lucifer2091.github.io/ublckdgms-17/hollow-knight/","d":false},{"n":"Kindergarten","g":"Kindergarten","s":72,"u":"https://lucifer2091.github.io/ublckdgms-15/kindergarten-1/","d":false},{"n":"Kindergarten 2","g":"Kindergarten","s":80,"u":"https://lucifer2091.github.io/ublckdgms-15/kindergarten-2/","d":false},{"n":"Liquid Soccer","g":"Racing \u0026 Sports","s":28,"u":"https://lucifer2091.github.io/ublckdgms-12/liquidsoccer/","d":false},{"n":"Little Alchemy 2","g":"Puzzle \u0026 Strategy","s":6,"u":"https://lucifer2091.github.io/ublckdgms-01/little-alchemy-2/","d":false},{"n":"Mario Kart 64","g":"Emulators","s":12,"u":"https://lucifer2091.github.io/ublckdgms-16/mario-kart-64/","d":false},{"n":"Metal Gear Solid","g":"Emulators","s":673,"u":"https://lucifer2091.github.io/ublckdgms-06/metal-gear-solid/","d":false},{"n":"Mischief Makers","g":"Emulators","s":8,"u":"https://lucifer2091.github.io/ublckdgms-16/mischief-makers/","d":false},{"n":"MotoX3M","g":"Racing \u0026 Sports","s":52,"u":"https://lucifer2091.github.io/ublckdgms-16/moto-x3m/","d":false},{"n":"OMORI","g":"Download Only","s":2765,"u":"https://github.com/lucifer2091/trans-fire/tree/main/omori","d":true},{"n":"Papa\u0027s Burgeria","g":"Flash Classics","s":4,"u":"https://lucifer2091.github.io/ublckdgms-16/papas-burgeria/","d":false},{"n":"Papa\u0027s Pizzeria","g":"Flash Classics","s":3,"u":"https://lucifer2091.github.io/ublckdgms-03/papas-pizzeria/","d":false},{"n":"Papa\u0027s Scooperia","g":"Flash Classics","s":20,"u":"https://lucifer2091.github.io/ublckdgms-16/papas-scooperia/","d":false},{"n":"Paper.io 2","g":"Puzzle \u0026 Strategy","s":1,"u":"https://lucifer2091.github.io/ublckdgms-08/paperio2/","d":false},{"n":"Perfect Dark","g":"Emulators","s":32,"u":"https://lucifer2091.github.io/ublckdgms-16/perfect-dark/","d":false},{"n":"Phoenix Wright: Ace Attorney","g":"Emulators","s":128,"u":"https://lucifer2091.github.io/ublckdgms-14/phoenix-wright/","d":false},{"n":"Pizza Tower","g":"Platformers","s":275,"u":"https://lucifer2091.github.io/ublckdgms-05/pizza-tower/","d":false},{"n":"Plague Inc","g":"Simulation \u0026 Idle","s":324,"u":"https://lucifer2091.github.io/ublckdgms-12/plagueinc-ev/","d":false},{"n":"Plants vs. Zombies 2","g":"Download Only","s":1206,"u":"https://github.com/lucifer2091/trans-fire/tree/main/plantsvszombiesjs/2","d":true},{"n":"Plants vs. Zombies MODDED Official","g":"Puzzle \u0026 Strategy","s":176,"u":"https://lucifer2091.github.io/ublckdgms-14/plantsvszombiesjs-modstol/","d":false},{"n":"Pokemon Emerald","g":"Emulators","s":16,"u":"https://lucifer2091.github.io/ublckdgms-16/pokemon-emerald/","d":false},{"n":"Pokemon Platinum","g":"Emulators","s":128,"u":"https://lucifer2091.github.io/ublckdgms-14/pokemon-platinum/","d":false},{"n":"Pokemon Ruby","g":"Emulators","s":16,"u":"https://lucifer2091.github.io/ublckdgms-16/pokemon-ruby/","d":false},{"n":"Polytrack","g":"Racing \u0026 Sports","s":88,"u":"https://lucifer2091.github.io/ublckdgms-15/polytrack/","d":false},{"n":"R.E.P.O.","g":"Action \u0026 Shooters","s":353,"u":"https://lucifer2091.github.io/ublckdgms-10/repo/","d":false},{"n":"Ragdoll Hit - Poki","g":"Action \u0026 Shooters","s":39,"u":"https://lucifer2091.github.io/ublckdgms-16/ragdollhit/","d":false},{"n":"Raldi\u0027s Crackhouse","g":"Horror","s":722,"u":"https://lucifer2091.github.io/ublckdgms-03/raldis-crackhouse/","d":false},{"n":"Scooby Run","g":"Flash Classics","s":1,"u":"https://lucifer2091.github.io/ublckdgms-01/flashgames-scoobyrun/","d":false},{"n":"Sheepy: A Short Adventure","g":"Platformers","s":247,"u":"https://lucifer2091.github.io/ublckdgms-04/sheepy/","d":false},{"n":"Stardew Valley","g":"Simulation \u0026 Idle","s":674,"u":"https://lucifer2091.github.io/ublckdgms-05/stardew-valley/","d":false},{"n":"Super Mario 64","g":"Emulators","s":8,"u":"https://lucifer2091.github.io/ublckdgms-16/super-mario-64/","d":false},{"n":"That\u0027s not my neighbor","g":"Horror","s":434,"u":"https://lucifer2091.github.io/ublckdgms-08/thats-not-my-neighbor/","d":false},{"n":"The Binding of Isaac","g":"Flash Classics","s":34,"u":"https://lucifer2091.github.io/ublckdgms-16/binding-of-isaac/","d":false},{"n":"The Legend of Zelda: Ocarina of Time","g":"Emulators","s":32,"u":"https://lucifer2091.github.io/ublckdgms-16/ocarina-of-time/","d":false},{"n":"ULTRAKILL","g":"Action \u0026 Shooters","s":187,"u":"https://lucifer2091.github.io/ublckdgms-14/ultrakill/","d":false},{"n":"UNDERTALE","g":"RPG \u0026 Story","s":193,"u":"https://lucifer2091.github.io/ublckdgms-13/undertale/","d":false},{"n":"UNDERTALE YELLOW","g":"RPG \u0026 Story","s":257,"u":"https://lucifer2091.github.io/ublckdgms-06/undertale-yellow/","d":false},{"n":"Unicycle Hero","g":"Platformers","s":4,"u":"https://lucifer2091.github.io/ublckdgms-16/unicycle/","d":false},{"n":"Vex 3","g":"Vex","s":10,"u":"https://lucifer2091.github.io/ublckdgms-14/vex-3/","d":false},{"n":"Vex 4","g":"Vex","s":13,"u":"https://lucifer2091.github.io/ublckdgms-16/vex-4/","d":false},{"n":"Vex 5","g":"Vex","s":12,"u":"https://lucifer2091.github.io/ublckdgms-16/vex-5/","d":false},{"n":"Vex 6","g":"Vex","s":23,"u":"https://lucifer2091.github.io/ublckdgms-16/vex-6/","d":false},{"n":"Vex 7","g":"Vex","s":29,"u":"https://lucifer2091.github.io/ublckdgms-16/vex-7/","d":false},{"n":"Water Ragdoll","g":"Flash Classics","s":0,"u":"https://lucifer2091.github.io/ublckdgms-01/flashgames-waterragdoll/","d":false},{"n":"Web Dashers","g":"Platformers","s":122,"u":"https://lucifer2091.github.io/ublckdgms-15/gdwebp/","d":false},{"n":"WHG","g":"Flash Classics","s":1,"u":"https://lucifer2091.github.io/ublckdgms-05/flashgames-whg/","d":false}];
-const ORDER = ["Action \u0026 Shooters","Horror","Platformers","Racing \u0026 Sports","Simulation \u0026 Idle","Puzzle \u0026 Strategy","RPG \u0026 Story","Five Nights at Freddy\u0027s","Deltarune","Vex","Kindergarten","Emulators","Minecraft","Flash Classics","Download Only"];
+const GAMES = [{"n":"1v1.LOL","g":"Action \u0026 Shooters","s":94,"u":"https://lucifer2091.github.io/ublckdgms-15/1v1lol/","d":false,"k":"1v1lol","i":null,"m":"1"},{"n":"Ace Attorney Investigations: Miles Edgeworth","g":"Emulators","s":64,"u":"https://lucifer2091.github.io/ublckdgms-16/miles-edgeworth/","d":false,"k":"miles-edgeworth","i":null,"m":"ME"},{"n":"Angry Birds Chrome","g":"Puzzle \u0026 Strategy","s":136,"u":"https://lucifer2091.github.io/ublckdgms-14/angry-birds/","d":false,"k":"angry-birds","i":"angry-birds","m":"A"},{"n":"Ape Escape","g":"Emulators","s":413,"u":"https://lucifer2091.github.io/ublckdgms-09/ape-escape/","d":false,"k":"ape-escape","i":null,"m":"AE"},{"n":"Apollo Justice: Ace Attorney","g":"Emulators","s":64,"u":"https://lucifer2091.github.io/ublckdgms-16/apollo-justice/","d":false,"k":"apollo-justice","i":"apollo-justice","m":"A"},{"n":"Bad Piggies","g":"Puzzle \u0026 Strategy","s":71,"u":"https://lucifer2091.github.io/ublckdgms-15/bad-piggies/","d":false,"k":"bad-piggies","i":null,"m":"BP"},{"n":"Balatro","g":"Puzzle \u0026 Strategy","s":120,"u":"https://lucifer2091.github.io/ublckdgms-15/balatrojs/","d":false,"k":"balatrojs","i":"balatrojs","m":"B"},{"n":"Baldi\u0027s Basics Classic Remastered","g":"Horror","s":85,"u":"https://lucifer2091.github.io/ublckdgms-15/baldis-basics/","d":false,"k":"baldis-basics","i":null,"m":"B"},{"n":"Banjo-Kazooie","g":"Emulators","s":16,"u":"https://lucifer2091.github.io/ublckdgms-16/banjo-kazooie/","d":false,"k":"banjo-kazooie","i":null,"m":"BK"},{"n":"BitLife - Life Simulator","g":"Simulation \u0026 Idle","s":20,"u":"https://lucifer2091.github.io/ublckdgms-06/bitlife/","d":false,"k":"bitlife","i":null,"m":"B"},{"n":"Bloons TD 5","g":"Puzzle \u0026 Strategy","s":11,"u":"https://lucifer2091.github.io/ublckdgms-16/bloons-td5/","d":false,"k":"bloons-td5","i":"bloons-td5","m":"B"},{"n":"Bloxorz","g":"Puzzle \u0026 Strategy","s":2,"u":"https://lucifer2091.github.io/ublckdgms-09/flashgames-bloxorz/","d":false,"k":"flashgames-bloxorz","i":null,"m":"B"},{"n":"Buckshot Roulette","g":"Action \u0026 Shooters","s":371,"u":"https://lucifer2091.github.io/ublckdgms-09/buckshot-roulette/","d":false,"k":"buckshot-roulette","i":"buckshot-roulette","m":"B"},{"n":"Class of \u002709","g":"Horror","s":768,"u":"https://lucifer2091.github.io/ublckdgms-02/birdseed-c009/","d":false,"k":"birdseed-c009","i":"birdseed-c009","m":"C"},{"n":"Cookie Clicker","g":"Simulation \u0026 Idle","s":12,"u":"https://lucifer2091.github.io/ublckdgms-16/cookieclicker/","d":false,"k":"cookieclicker","i":"cookieclicker","m":"C"},{"n":"Cuphead","g":"Download Only","s":1295,"u":"https://github.com/lucifer2091/trans-2W/tree/main/cuphead","d":true,"k":"cuphead","i":"cuphead","m":"C"},{"n":"Deltarune - Chapter 1","g":"Deltarune","s":225,"u":"https://lucifer2091.github.io/ublckdgms-03/deltarune-1/","d":false,"k":"deltarune-1","i":null,"m":"I"},{"n":"Deltarune - Chapter 2","g":"Deltarune","s":283,"u":"https://lucifer2091.github.io/ublckdgms-12/deltarune-2/","d":false,"k":"deltarune-2","i":null,"m":"II"},{"n":"Deltarune - Chapter 3","g":"Deltarune","s":359,"u":"https://lucifer2091.github.io/ublckdgms-10/deltarune-3/","d":false,"k":"deltarune-3","i":null,"m":"III"},{"n":"Deltarune - Chapter 4","g":"Deltarune","s":351,"u":"https://lucifer2091.github.io/ublckdgms-11/deltarune-4/","d":false,"k":"deltarune-4","i":null,"m":"IV"},{"n":"Deltarune - Chapter 5","g":"Deltarune","s":482,"u":"https://lucifer2091.github.io/ublckdgms-08/deltarune-5/","d":false,"k":"deltarune-5","i":null,"m":"V"},{"n":"Donkey Kong 64","g":"Emulators","s":32,"u":"https://lucifer2091.github.io/ublckdgms-08/donkey-kong-64/","d":false,"k":"donkey-kong-64","i":null,"m":"DK"},{"n":"Donkey Kong Country 2","g":"Emulators","s":4,"u":"https://lucifer2091.github.io/ublckdgms-16/donkey-kong-country-2/","d":false,"k":"donkey-kong-country-2","i":null,"m":"DKC"},{"n":"Eaglercraft 1.12.2 (Client / JS)","g":"Minecraft","s":77,"u":"https://lucifer2091.github.io/ublckdgms-13/eaglercraft-1.12.2-js/","d":false,"k":"eaglercraft-1.12.2-js","i":null,"m":"1.12"},{"n":"Eaglercraft 1.12.2 (Client / WASM)","g":"Minecraft","s":24,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.12.2-wasm/","d":false,"k":"eaglercraft-1.12.2-wasm","i":null,"m":"1.12"},{"n":"Eaglercraft 1.12.2 (Web / JS)","g":"Minecraft","s":89,"u":"https://lucifer2091.github.io/ublckdgms-15/eaglercraft-1.12.2-web-js/","d":false,"k":"eaglercraft-1.12.2-web-js","i":null,"m":"1.12"},{"n":"Eaglercraft 1.12.2 (Web / WASM)","g":"Minecraft","s":18,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.12.2-web-wasm/","d":false,"k":"eaglercraft-1.12.2-web-wasm","i":null,"m":"1.12"},{"n":"Eaglercraft 1.16.5 (Client / WASM)","g":"Minecraft","s":44,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.16.5-wasm/","d":false,"k":"eaglercraft-1.16.5-wasm","i":null,"m":"1.16"},{"n":"Eaglercraft 1.16.5 (Web / WASM)","g":"Minecraft","s":34,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.16.5-web-wasm/","d":false,"k":"eaglercraft-1.16.5-web-wasm","i":null,"m":"1.16"},{"n":"Eaglercraft 1.21.11 (Client / WASM)","g":"Minecraft","s":46,"u":"https://lucifer2091.github.io/ublckdgms-15/eaglercraft-1.21.11-wasm/","d":false,"k":"eaglercraft-1.21.11-wasm","i":null,"m":"1.21"},{"n":"Eaglercraft 1.8.8 (Client / JS)","g":"Minecraft","s":17,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.8.8-js/","d":false,"k":"eaglercraft-1.8.8-js","i":null,"m":"1.8"},{"n":"Eaglercraft 1.8.8 (Client / WASM)","g":"Minecraft","s":14,"u":"https://lucifer2091.github.io/ublckdgms-16/eaglercraft-1.8.8-wasm/","d":false,"k":"eaglercraft-1.8.8-wasm","i":null,"m":"1.8"},{"n":"Escape Road","g":"Racing \u0026 Sports","s":232,"u":"https://lucifer2091.github.io/ublckdgms-13/escape-road/","d":false,"k":"escape-road","i":"escape-road","m":"E"},{"n":"False Frights","g":"Horror","s":209,"u":"https://lucifer2091.github.io/ublckdgms-13/false-frights/","d":false,"k":"false-frights","i":"false-frights","m":"F"},{"n":"Fears to Fathom: Home Alone","g":"Horror","s":786,"u":"https://lucifer2091.github.io/ublckdgms-01/fears-to-fathom/","d":false,"k":"fears-to-fathom","i":"fears-to-fathom","m":"F"},{"n":"Five Night\u0027s at BIG E","g":"Five Nights at Freddy\u0027s","s":156,"u":"https://lucifer2091.github.io/ublckdgms-01/fnae/","d":false,"k":"fnae","i":null,"m":"E"},{"n":"Five Nights at Freddy\u0027s 1","g":"Five Nights at Freddy\u0027s","s":164,"u":"https://lucifer2091.github.io/ublckdgms-09/fnaf-1/","d":false,"k":"fnaf-1","i":"fnaf-1","m":"F"},{"n":"Five Nights at Freddy\u0027s 2","g":"Five Nights at Freddy\u0027s","s":180,"u":"https://lucifer2091.github.io/ublckdgms-02/fnaf-2/","d":false,"k":"fnaf-2","i":"fnaf-2","m":"F"},{"n":"Five Nights at Freddy\u0027s 3","g":"Five Nights at Freddy\u0027s","s":185,"u":"https://lucifer2091.github.io/ublckdgms-14/fnaf-3/","d":false,"k":"fnaf-3","i":"fnaf-3","m":"F"},{"n":"Five Nights at Freddy\u0027s 4","g":"Five Nights at Freddy\u0027s","s":344,"u":"https://lucifer2091.github.io/ublckdgms-11/fnaf-4/","d":false,"k":"fnaf-4","i":"fnaf-4","m":"F"},{"n":"Five Nights at Freddy\u0027s Pizzeria Simulator","g":"Five Nights at Freddy\u0027s","s":362,"u":"https://lucifer2091.github.io/ublckdgms-07/fnaf-pizzeria-simulator/","d":false,"k":"fnaf-pizzeria-simulator","i":"fnaf-pizzeria-simulator","m":"F"},{"n":"Five Nights at Freddy\u0027s Sister Location","g":"Five Nights at Freddy\u0027s","s":703,"u":"https://lucifer2091.github.io/ublckdgms-04/fnaf-sister-location/","d":false,"k":"fnaf-sister-location","i":"fnaf-sister-location","m":"F"},{"n":"Five Nights at Freddy\u0027s Ultimate Custom Night","g":"Five Nights at Freddy\u0027s","s":314,"u":"https://lucifer2091.github.io/ublckdgms-12/fnaf-ucn/","d":false,"k":"fnaf-ucn","i":"fnaf-ucn","m":"F"},{"n":"Five Nights at Freddy\u0027s World","g":"Five Nights at Freddy\u0027s","s":254,"u":"https://lucifer2091.github.io/ublckdgms-11/fnaf-world/","d":false,"k":"fnaf-world","i":"fnaf-world","m":"F"},{"n":"Funny Shooter","g":"Action \u0026 Shooters","s":80,"u":"https://lucifer2091.github.io/ublckdgms-15/funny-shooter/","d":false,"k":"funny-shooter","i":null,"m":"FS"},{"n":"FX Client","g":"Minecraft","s":1,"u":"https://lucifer2091.github.io/ublckdgms-02/fxclient/","d":false,"k":"fxclient","i":null,"m":"FX"},{"n":"Grand Theft Auto: Vice City","g":"Action \u0026 Shooters","s":0,"u":"https://lucifer2091.github.io/ublckdgms-01/gtavc/","d":false,"k":"gtavc","i":null,"m":"VC"},{"n":"Granny","g":"Horror","s":587,"u":"https://lucifer2091.github.io/ublckdgms-07/granny/","d":false,"k":"granny","i":"granny","m":"G"},{"n":"Half-Life","g":"Action \u0026 Shooters","s":238,"u":"https://lucifer2091.github.io/ublckdgms-10/half-life/","d":false,"k":"half-life","i":"half-life","m":"H"},{"n":"Happy Wheels","g":"Flash Classics","s":4,"u":"https://lucifer2091.github.io/ublckdgms-16/flashgames-happywheels/","d":false,"k":"flashgames-happywheels","i":null,"m":"HW"},{"n":"Hollow Knight","g":"Platformers","s":952,"u":"https://lucifer2091.github.io/ublckdgms-17/hollow-knight/","d":false,"k":"hollow-knight","i":"hollow-knight","m":"H"},{"n":"Kindergarten","g":"Kindergarten","s":72,"u":"https://lucifer2091.github.io/ublckdgms-15/kindergarten-1/","d":false,"k":"kindergarten-1","i":"kindergarten-1","m":"K"},{"n":"Kindergarten 2","g":"Kindergarten","s":80,"u":"https://lucifer2091.github.io/ublckdgms-15/kindergarten-2/","d":false,"k":"kindergarten-2","i":"kindergarten-2","m":"K"},{"n":"Liquid Soccer","g":"Racing \u0026 Sports","s":28,"u":"https://lucifer2091.github.io/ublckdgms-12/liquidsoccer/","d":false,"k":"liquidsoccer","i":null,"m":"LS"},{"n":"Little Alchemy 2","g":"Puzzle \u0026 Strategy","s":6,"u":"https://lucifer2091.github.io/ublckdgms-01/little-alchemy-2/","d":false,"k":"little-alchemy-2","i":"little-alchemy-2","m":"L"},{"n":"Mario Kart 64","g":"Emulators","s":12,"u":"https://lucifer2091.github.io/ublckdgms-16/mario-kart-64/","d":false,"k":"mario-kart-64","i":null,"m":"MK"},{"n":"Metal Gear Solid","g":"Emulators","s":673,"u":"https://lucifer2091.github.io/ublckdgms-06/metal-gear-solid/","d":false,"k":"metal-gear-solid","i":null,"m":"MGS"},{"n":"Mischief Makers","g":"Emulators","s":8,"u":"https://lucifer2091.github.io/ublckdgms-16/mischief-makers/","d":false,"k":"mischief-makers","i":null,"m":"MM"},{"n":"MotoX3M","g":"Racing \u0026 Sports","s":52,"u":"https://lucifer2091.github.io/ublckdgms-16/moto-x3m/","d":false,"k":"moto-x3m","i":"moto-x3m","m":"M"},{"n":"OMORI","g":"Download Only","s":2765,"u":"https://github.com/lucifer2091/trans-fire/tree/main/omori","d":true,"k":"omori","i":"omori","m":"O"},{"n":"Papa\u0027s Burgeria","g":"Flash Classics","s":4,"u":"https://lucifer2091.github.io/ublckdgms-16/papas-burgeria/","d":false,"k":"papas-burgeria","i":null,"m":"PB"},{"n":"Papa\u0027s Pizzeria","g":"Flash Classics","s":3,"u":"https://lucifer2091.github.io/ublckdgms-03/papas-pizzeria/","d":false,"k":"papas-pizzeria","i":"papas-pizzeria","m":"P"},{"n":"Papa\u0027s Scooperia","g":"Flash Classics","s":20,"u":"https://lucifer2091.github.io/ublckdgms-16/papas-scooperia/","d":false,"k":"papas-scooperia","i":null,"m":"PS"},{"n":"Paper.io 2","g":"Puzzle \u0026 Strategy","s":1,"u":"https://lucifer2091.github.io/ublckdgms-08/paperio2/","d":false,"k":"paperio2","i":"paperio2","m":"P"},{"n":"Perfect Dark","g":"Emulators","s":32,"u":"https://lucifer2091.github.io/ublckdgms-16/perfect-dark/","d":false,"k":"perfect-dark","i":null,"m":"PD"},{"n":"Phoenix Wright: Ace Attorney","g":"Emulators","s":128,"u":"https://lucifer2091.github.io/ublckdgms-14/phoenix-wright/","d":false,"k":"phoenix-wright","i":"phoenix-wright","m":"P"},{"n":"Pizza Tower","g":"Platformers","s":275,"u":"https://lucifer2091.github.io/ublckdgms-05/pizza-tower/","d":false,"k":"pizza-tower","i":"pizza-tower","m":"P"},{"n":"Plague Inc","g":"Simulation \u0026 Idle","s":324,"u":"https://lucifer2091.github.io/ublckdgms-12/plagueinc-ev/","d":false,"k":"plagueinc-ev","i":"plagueinc-ev","m":"P"},{"n":"Plants vs. Zombies 2","g":"Download Only","s":1206,"u":"https://github.com/lucifer2091/trans-fire/tree/main/plantsvszombiesjs/2","d":true,"k":"plants-vs-zombies-2","i":null,"m":"2"},{"n":"Plants vs. Zombies MODDED Official","g":"Puzzle \u0026 Strategy","s":176,"u":"https://lucifer2091.github.io/ublckdgms-14/plantsvszombiesjs-modstol/","d":false,"k":"plantsvszombiesjs-modstol","i":"plantsvszombiesjs-modstol","m":"P"},{"n":"Pokemon Emerald","g":"Emulators","s":16,"u":"https://lucifer2091.github.io/ublckdgms-16/pokemon-emerald/","d":false,"k":"pokemon-emerald","i":null,"m":"PE"},{"n":"Pokemon Platinum","g":"Emulators","s":128,"u":"https://lucifer2091.github.io/ublckdgms-14/pokemon-platinum/","d":false,"k":"pokemon-platinum","i":null,"m":"PP"},{"n":"Pokemon Ruby","g":"Emulators","s":16,"u":"https://lucifer2091.github.io/ublckdgms-16/pokemon-ruby/","d":false,"k":"pokemon-ruby","i":null,"m":"PR"},{"n":"Polytrack","g":"Racing \u0026 Sports","s":88,"u":"https://lucifer2091.github.io/ublckdgms-15/polytrack/","d":false,"k":"polytrack","i":"polytrack","m":"P"},{"n":"R.E.P.O.","g":"Action \u0026 Shooters","s":353,"u":"https://lucifer2091.github.io/ublckdgms-10/repo/","d":false,"k":"repo","i":"repo","m":"R"},{"n":"Ragdoll Hit - Poki","g":"Action \u0026 Shooters","s":39,"u":"https://lucifer2091.github.io/ublckdgms-16/ragdollhit/","d":false,"k":"ragdollhit","i":null,"m":"R"},{"n":"Raldi\u0027s Crackhouse","g":"Horror","s":722,"u":"https://lucifer2091.github.io/ublckdgms-03/raldis-crackhouse/","d":false,"k":"raldis-crackhouse","i":null,"m":"R"},{"n":"Scooby Run","g":"Flash Classics","s":1,"u":"https://lucifer2091.github.io/ublckdgms-01/flashgames-scoobyrun/","d":false,"k":"flashgames-scoobyrun","i":null,"m":"SR"},{"n":"Sheepy: A Short Adventure","g":"Platformers","s":247,"u":"https://lucifer2091.github.io/ublckdgms-04/sheepy/","d":false,"k":"sheepy","i":"sheepy","m":"S"},{"n":"Stardew Valley","g":"Simulation \u0026 Idle","s":674,"u":"https://lucifer2091.github.io/ublckdgms-05/stardew-valley/","d":false,"k":"stardew-valley","i":"stardew-valley","m":"S"},{"n":"Super Mario 64","g":"Emulators","s":8,"u":"https://lucifer2091.github.io/ublckdgms-16/super-mario-64/","d":false,"k":"super-mario-64","i":null,"m":"64"},{"n":"That\u0027s not my neighbor","g":"Horror","s":434,"u":"https://lucifer2091.github.io/ublckdgms-08/thats-not-my-neighbor/","d":false,"k":"thats-not-my-neighbor","i":"thats-not-my-neighbor","m":"T"},{"n":"The Binding of Isaac","g":"Flash Classics","s":34,"u":"https://lucifer2091.github.io/ublckdgms-16/binding-of-isaac/","d":false,"k":"binding-of-isaac","i":"binding-of-isaac","m":"T"},{"n":"The Legend of Zelda: Ocarina of Time","g":"Emulators","s":32,"u":"https://lucifer2091.github.io/ublckdgms-16/ocarina-of-time/","d":false,"k":"ocarina-of-time","i":null,"m":"OoT"},{"n":"ULTRAKILL","g":"Action \u0026 Shooters","s":187,"u":"https://lucifer2091.github.io/ublckdgms-14/ultrakill/","d":false,"k":"ultrakill","i":"ultrakill","m":"U"},{"n":"UNDERTALE","g":"RPG \u0026 Story","s":193,"u":"https://lucifer2091.github.io/ublckdgms-13/undertale/","d":false,"k":"undertale","i":null,"m":"U"},{"n":"UNDERTALE YELLOW","g":"RPG \u0026 Story","s":257,"u":"https://lucifer2091.github.io/ublckdgms-06/undertale-yellow/","d":false,"k":"undertale-yellow","i":null,"m":"Y"},{"n":"Unicycle Hero","g":"Platformers","s":4,"u":"https://lucifer2091.github.io/ublckdgms-16/unicycle/","d":false,"k":"unicycle","i":null,"m":"U"},{"n":"Vex 3","g":"Vex","s":10,"u":"https://lucifer2091.github.io/ublckdgms-14/vex-3/","d":false,"k":"vex-3","i":null,"m":"3"},{"n":"Vex 4","g":"Vex","s":13,"u":"https://lucifer2091.github.io/ublckdgms-16/vex-4/","d":false,"k":"vex-4","i":null,"m":"4"},{"n":"Vex 5","g":"Vex","s":12,"u":"https://lucifer2091.github.io/ublckdgms-16/vex-5/","d":false,"k":"vex-5","i":null,"m":"5"},{"n":"Vex 6","g":"Vex","s":23,"u":"https://lucifer2091.github.io/ublckdgms-16/vex-6/","d":false,"k":"vex-6","i":null,"m":"6"},{"n":"Vex 7","g":"Vex","s":29,"u":"https://lucifer2091.github.io/ublckdgms-16/vex-7/","d":false,"k":"vex-7","i":null,"m":"7"},{"n":"Water Ragdoll","g":"Flash Classics","s":0,"u":"https://lucifer2091.github.io/ublckdgms-01/flashgames-waterragdoll/","d":false,"k":"flashgames-waterragdoll","i":null,"m":"W"},{"n":"Web Dashers","g":"Platformers","s":122,"u":"https://lucifer2091.github.io/ublckdgms-15/gdwebp/","d":false,"k":"gdwebp","i":null,"m":"W"},{"n":"WHG","g":"Flash Classics","s":1,"u":"https://lucifer2091.github.io/ublckdgms-05/flashgames-whg/","d":false,"k":"flashgames-whg","i":null,"m":"W"}];
+const ORDER = ["Action \u0026 Shooters","Deltarune","Emulators","Five Nights at Freddy\u0027s","Flash Classics","Horror","Kindergarten","Minecraft","Platformers","Puzzle \u0026 Strategy","Racing \u0026 Sports","RPG \u0026 Story","Simulation \u0026 Idle","Vex","Download Only"];
 
 let group = 'All', term = '';
 let settleNext = false;
@@ -376,6 +470,13 @@ function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+// keep a trailing parenthetical like "(Client / WASM)" on one line
+function titleHtml(n) {
+  const i = n.indexOf(' (');
+  if (i > 0) return escapeHtml(n.slice(0, i)) + ' <span class="nw">' + escapeHtml(n.slice(i + 1)) + '</span>';
+  return escapeHtml(n);
+}
+
 function render() {
   const q = term.trim().toLowerCase();
   listEl.innerHTML = '';
@@ -399,9 +500,24 @@ function render() {
 
     items.forEach(x => {
       const a = document.createElement('a');
-      a.className = 'card' + (x.d ? ' dl' : '');
+      const art = !!x.i;
+      a.className = 'card' + (x.d ? ' dl' : '') + (art ? '' : ' plate');
       a.href = x.u;
-      a.innerHTML = '<h3>' + escapeHtml(x.n) + '</h3><span class="sz">' + (x.d ? 'download' : x.s + ' mb') + '</span>';
+      a.style.setProperty('--chars', Math.min(46, x.n.length));
+
+      let inner = '';
+      if (art) {
+        inner += '<span class="card__art" style="background-image:url(images/cards/' + x.i + '.jpg)"></span>';
+      }
+      inner += '<span class="card__t">' + titleHtml(x.n) + '</span>';
+      inner += '<span class="card__s">' + (x.d ? 'download' : (x.s < 1 ? '&lt;1 mb' : x.s + ' mb')) + '</span>';
+      inner += '<span class="card__f"></span>';
+
+      const box = document.createElement('span');
+      box.className = 'card__in';
+      box.innerHTML = inner;
+      a.appendChild(box);
+
       if (x.d) {
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
@@ -429,8 +545,34 @@ function render() {
     );
   }
   settleNext = false;
+  fitTitles();
   renderRecent();
 }
+
+function fitTitles() {
+  const titles = listEl.querySelectorAll('.card__t');
+  for (let i = 0; i < titles.length; i++) {
+    const t = titles[i];
+    t.style.fontSize = '';
+    let guard = 0;
+    while (guard++ < 8) {
+      const cs = getComputedStyle(t);
+      const lh = parseFloat(cs.lineHeight);
+      const h = t.getBoundingClientRect().height;
+      if (!lh || h <= lh * 2 + 1) break;
+      const fs = parseFloat(cs.fontSize);
+      if (fs <= 10.6) break;
+      const factor = Math.max(0.72, Math.min(0.97, (lh * 2) / h));
+      t.style.fontSize = Math.max(10.6, fs * factor) + 'px';
+    }
+  }
+}
+
+let fitTimer = 0;
+addEventListener('resize', () => {
+  clearTimeout(fitTimer);
+  fitTimer = setTimeout(fitTitles, 120);
+});
 
 function readRecent() {
   try {
