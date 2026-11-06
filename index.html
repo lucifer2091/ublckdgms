@@ -53,6 +53,11 @@ html[data-theme="dark"]{
   --sel:#3a3126;
   --accent:#dd8a62;
 }
+html:not([data-theme="dark"]){
+  --card-outline:#b4451f;
+  --filter-border:#b4451f;
+  --sect-border:#b4451f;
+}
 *{box-sizing:border-box}
 html{
   font-size:clamp(87.5%, 1.6vw + 81.7%, 115%);
@@ -130,27 +135,29 @@ header{border-bottom:1px solid var(--rule)}
 .search input:focus{border-color:var(--focus);background:var(--hover)}
 .search input::placeholder{color:var(--faint)}
 
-.intro{padding:clamp(24px, 2.3rem, 40px) 0 .25rem;max-width:40rem}
-.intro p{margin:0 0 .6rem;color:var(--muted);font-size:.97rem;line-height:1.66}
-.stamp{
-  font-family:var(--serif);font-style:italic;
-  font-size:.8rem;color:var(--faint);
-}
-
 .recent{
-  display:flex;flex-wrap:wrap;align-items:baseline;gap:.3rem .55rem;
-  margin:clamp(14px,1.4rem,24px) 0 0;
+  display:flex;flex-direction:column;gap:.5rem;
+  margin:clamp(14px,1.4rem,24px) 0 clamp(20px, 2rem, 32px);
+  padding:clamp(12px, 1.4rem, 20px) clamp(16px, 2.4vw, 40px);
+  border:1px solid var(--rule);
+  border-radius:8px;
+  background:var(--card);
 }
-.recent[hidden]{display:none}
-.recent-lab{font-style:italic;font-size:.78rem;color:var(--faint)}
-.recent-list{display:flex;flex-wrap:wrap;margin:0;padding:0;list-style:none}
+.recent-lab{
+  display:block;font-family:var(--head);font-weight:700;letter-spacing:.008em;
+  font-size:clamp(.9rem, 1.6vw, 1.25rem);color:var(--ink);
+  margin:0 0 .25rem;
+}
+.recent-list{display:flex;flex-wrap:wrap;margin:0;padding:0;list-style:none;gap:.35rem}
 .recent-list li{margin:0}
 .recent-list li + li::before{content:"\00b7";color:var(--dot);padding:0 .5rem}
 .recent-list a{
   color:var(--muted);text-decoration:none;font-size:.86rem;
   transition:color var(--fast) linear;
+  padding:.14rem .5rem;border-radius:4px;border:1px solid transparent;
 }
-.recent-list a:hover{color:var(--ink)}
+.recent-list a:hover{color:var(--ink);border-color:var(--accent);background:rgba(180,69,31,.06)}
+.recent-list a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .filters{
   display:flex;flex-wrap:wrap;
@@ -171,7 +178,7 @@ header{border-bottom:1px solid var(--rule)}
   transition:color var(--fast) linear,border-color var(--fast) linear,background var(--fast) linear;
 }
 .filters button:hover{color:var(--ink);border-color:var(--edge);background:var(--hover)}
-.filters button.on{color:var(--ink);border-color:var(--accent);background:var(--wash);font-weight:600}
+.filters button.on{color:var(--ink);border-color:var(--filter-border, var(--accent));background:var(--wash);font-weight:600}
 .filter-count{font-size:.72rem;color:var(--faint);margin-left:.26rem}
 .filters .view.on{color:var(--accent);border-color:var(--accent);background:var(--wash)}
 .filters .shuffle{font-style:italic;color:var(--faint);padding:.22rem .5rem;border-color:transparent}
@@ -184,12 +191,17 @@ header{border-bottom:1px solid var(--rule)}
 .sect-head h2{
   margin:0;font-family:var(--head);
   font-size:1rem;font-weight:700;letter-spacing:.005em;
+  color:var(--ink);
+  border-bottom:2px solid var(--sect-border, var(--accent));
+  padding-bottom:.28rem;
+  display:inline-block;
 }
 .sect-head .n{
   font-family:var(--serif);font-style:italic;
   font-size:.78rem;color:var(--faint);
+  margin-left:.3rem;display:inline-block;padding-top:.18rem;
 }
-.sect-head .rule{flex:1;height:1px;background:var(--rule);transform:translateY(-.25rem)}
+.sect-head .rule{flex:1;height:1px;background:var(--rule);transform:translateY(-.25rem);margin-left:.55rem}
 
 .grid{
   display:grid;
@@ -206,10 +218,11 @@ header{border-bottom:1px solid var(--rule)}
   text-decoration:none;
   overflow:hidden;
   isolation:isolate;
-  transition:box-shadow 150ms linear;
+  transition:box-shadow 150ms linear, border-color 150ms linear;
 }
 .card:hover{box-shadow:0 0 0 1px rgba(232,225,210,.30)}
 .card:active{box-shadow:0 0 0 1px rgba(232,225,210,.45)}
+.card:focus-visible{outline:none;box-shadow:0 0 0 2px var(--card-outline, var(--accent));border-radius:4px}
 
 .card__in{
   position:relative;display:block;width:100%;height:100%;
@@ -328,10 +341,12 @@ main.wrap{padding-bottom:clamp(30px, 3.2rem, 60px)}
 .ov-bar{
   display:flex;align-items:center;gap:1rem;
   padding:.55rem 1rem;
-  border-bottom:1px solid #242424;background:#171717;color:#e9e5dd;
+  border-bottom:2px solid var(--accent);
+  background:var(--card);color:var(--ink);
   font-size:.8rem;
   transform:translateY(-.45rem);
   transition:transform .16s var(--ease);
+  box-shadow:0 4px 14px rgba(0,0,0,.35);
 }
 #overlay.open .ov-bar{transform:none}
 .ov-title{
@@ -341,16 +356,16 @@ main.wrap{padding-bottom:clamp(30px, 3.2rem, 60px)}
 .ov-title #ovName{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ov-note{
   flex:none;font-family:var(--serif);font-style:italic;
-  font-size:.76rem;color:#8a847b;
+  font-size:.76rem;color:var(--faint);
 }
 .ov-note[hidden]{display:none}
 .ov-bar a,.ov-bar button{
   background:none;border:0;padding:0;cursor:pointer;font:inherit;
-  color:#a39d94;text-decoration:none;white-space:nowrap;
+  color:var(--muted);text-decoration:none;white-space:nowrap;
   transition:color var(--fast) linear;
 }
-.ov-bar a:hover,.ov-bar button:hover{color:#fff}
-.ov-bar button.done{color:#e9e5dd}
+.ov-bar a:hover,.ov-bar button:hover{color:var(--accent)}
+.ov-bar button.done{color:var(--ink)}
 #frame{
   flex:1;width:100%;border:0;background:#000;
   opacity:0;transition:opacity .2s ease-out;
@@ -479,12 +494,8 @@ html.theming #overlay,html.theming #overlay *{transition:none !important}
 </header>
 
 <main class="wrap">
-  <div class="intro">
-    <p>Everything from the three archives on one page. Most of them run right here; the three big ones are download-only and say so on the card.</p>
-    <div class="stamp">checked 27 oct 2026 &middot; some games take a minute to load</div>
-  </div>
 
-  <div class="recent" id="recent" hidden>
+  <div class="recent" id="recent">
     <span class="recent-lab">recently played</span>
     <ul class="recent-list" id="recentList"></ul>
   </div>
