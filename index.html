@@ -185,16 +185,15 @@ header{border-bottom:1px solid var(--rule)}
 .sect-head .rule{flex:1;height:1px;background:var(--rule);transform:translateY(-.25rem)}
 
 .grid{
-  display:flex;flex-wrap:wrap;align-items:stretch;
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(12.5rem, 1fr));
+  align-items:stretch;
   gap:.5rem;
 }
 .card{
   position:relative;display:block;
-  flex:1 1 auto;
-  width:calc(6.8rem + var(--chars) * .30rem);
-  min-width:12.4rem;max-width:40rem;
+  width:auto;min-width:0;max-width:none;
   aspect-ratio:3.15/1;
-  min-height:5.2rem;max-height:12.7rem;
   border-radius:3px;
   background:#12141a;
   text-decoration:none;
@@ -234,7 +233,8 @@ header{border-bottom:1px solid var(--rule)}
 
 /* on phones the banners run full width, like the reference */
 @media (max-width:560px){
-  .card{flex:1 1 100%;width:100%;min-width:0;max-width:none;min-height:0;max-height:none}
+  .grid{grid-template-columns:1fr}
+  .card{min-height:0;max-height:none}
 }
 
 /* frame: 9-slice so corners stay crisp at any width */
@@ -527,6 +527,7 @@ const ovCopy = $('ovCopy'), ovFull = $('ovFull');
 const RECENT_KEY = 'backpage:recent';
 
 const CHANGES = [
+  {d:'5 nov 2026', t:'tiles set to one even grid, so short titles no longer blow up into oversized banners'},
   {d:'5 nov 2026', t:'layout fixed for every screen: rows fill evenly, type scales up on big displays, the log sits where it should'},
   {d:'5 nov 2026', t:'banners added for 37 more games: 14 emulator titles, deltarune chapters 1-5, vex 3-7, flash classics'},
   {d:'5 nov 2026', t:'themed banner added: plants vs. zombies 2'},
