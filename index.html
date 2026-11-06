@@ -159,18 +159,25 @@ header{border-bottom:1px solid var(--rule)}
 }
 .filters li{margin:0 0 .38rem;white-space:nowrap}
 .filters li:not(:last-child)::after{content:"\00b7";color:var(--dot);padding:0 .62rem}
-.filters li + li::before{content:none}
-.filters button{
-  background:none;border:0;padding:0 0 1px;margin:0;cursor:pointer;
-  font:inherit;font-size:.87rem;color:var(--muted);
-  transition:color var(--fast) linear;
+.filters{
+  display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;
+  margin:0 0 clamp(16px, 1.8rem, 26px);padding:0;list-style:none;
 }
-.filters button:hover{color:var(--ink)}
-.filters button.on{color:var(--ink);font-weight:600;box-shadow:inset 0 -1px 0 var(--accent)}
-.filters .shuffle{font-style:italic;color:var(--faint)}
-.filters .shuffle:hover{color:var(--ink)}
-.filters .shuffle:disabled{opacity:.4;cursor:default}
-.filters .shuffle:disabled:hover{color:var(--faint)}
+.filters li{margin:0}
+.filters button{
+  background:none;border:1px solid var(--rule);border-radius:6px;
+  padding:.28rem .66rem;margin:0;cursor:pointer;
+  font:inherit;font-size:.82rem;color:var(--muted);
+  transition:color var(--fast) linear,border-color var(--fast) linear,background var(--fast) linear;
+}
+.filters button:hover{color:var(--ink);border-color:var(--edge);background:var(--hover)}
+.filters button.on{color:var(--ink);border-color:var(--accent);background:var(--wash);font-weight:600}
+.filter-count{font-size:.72rem;color:var(--faint);margin-left:.26rem}
+.filters .view.on{color:var(--accent);border-color:var(--accent);background:var(--wash)}
+.filters .shuffle{font-style:italic;color:var(--faint);padding:.22rem .5rem;border-color:transparent}
+.filters .shuffle:hover{color:var(--ink);border-color:var(--edge);background:var(--hover)}
+.filters .shuffle:disabled{opacity:.4;cursor:default;color:var(--faint)}
+.filters .shuffle:disabled:hover{color:var(--faint);background:none}
 
 .sect{margin:0 0 clamp(24px, 2.3rem, 40px)}
 .sect-head{display:flex;align-items:baseline;gap:.55rem;margin:0 0 .7rem}
@@ -584,16 +591,62 @@ $('logClose').onclick = closeLog;
 
 const PRESENT = ORDER.filter(g => GAMES.some(x => x.g === g));
 
+let group = 'All', term = '', artFilter = 'all'; // 'all' | 'art' | 'plates'
+
+function artPasses(x) {
+  if (artFilter === 'all') return true;
+  if (artFilter === 'art') return !!x.i;
+  return !x.i;
+}
+
+function groupCount(g) {
+  return GAMES.filter(x => x.g === g && artPasses(x)).length;
+}
+
 ['All'].concat(PRESENT).forEach((name, i) => {
   const li = document.createElement('li');
   const b = document.createElement('button');
   b.type = 'button';
+  b.className = 'group' + (name === 'All' ? ' all' : '');
   b.textContent = name === 'All' ? 'all' : name;
-  if (i === 0) b.className = 'on';
+  const c = document.createElement('span');
+  c.className = 'filter-count';
+  c.textContent = '(' + (name === 'All' ? GAMES.length : groupCount(name)) + ')';
+  b.appendChild(c);
+  if (i === 0) b.classList.add('on');
   b.onclick = () => {
     group = name;
     filterEl.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
     settleNext = true;
+    render();
+  };
+  li.appendChild(b);
+  filterEl.appendChild(li);
+});
+
+const views = [
+  { label: 'all', val: 'all' },
+  { label: 'with banners', val: 'art' },
+  { label: 'plates', val: 'plates' }
+];
+views.forEach(v => {
+  const li = document.createElement('li');
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'view' + (artFilter === v.val ? ' on' : '');
+  b.textContent = v.label;
+  const c = document.createElement('span');
+  c.className = 'filter-count';
+  c.textContent = '(' + (v.val === 'all' ? GAMES.length : GAMES.filter(artPasses).length) + ')';
+  b.appendChild(c);
+  b.onclick = () => {
+    artFilter = v.val;
+    filterEl.querySelectorAll('button.view').forEach(x => x.classList.toggle('on', x === b));
+    // update counts on all view buttons
+    views.forEach((vv, vi) => {
+      const btn = filterEl.querySelectorAll('button.view')[vi];
+      btn.querySelector('.filter-count').textContent = '(' + (vv.val === 'all' ? GAMES.length : GAMES.filter(artPasses).length) + ')';
+    });
     render();
   };
   li.appendChild(b);
@@ -608,7 +661,7 @@ shuffleBtn.textContent = 'shuffle';
 shuffleBtn.title = 'pick one at random';
 shuffleBtn.onclick = () => {
   const q = term.trim().toLowerCase();
-  const pool = GAMES.filter(x => !x.d && (group === 'All' || x.g === group) && matches(x, q));
+  const pool = GAMES.filter(x => !x.d && artPasses(x) && (group === 'All' || x.g === group) && matches(x, q));
   if (!pool.length) return;
   openGame(pool[Math.floor(Math.random() * pool.length)]);
 };
@@ -638,7 +691,7 @@ function render() {
 
   ORDER.forEach(g => {
     if (group !== 'All' && group !== g) return;
-    const items = GAMES.filter(x => x.g === g && matches(x, q));
+    const items = GAMES.filter(x => x.g === g && artPasses(x) && matches(x, q));
     if (!items.length) return;
     shown += items.length;
 
@@ -689,7 +742,7 @@ function render() {
   emptyEl.style.display = shown ? 'none' : 'block';
   countEl.textContent = shown === GAMES.length ? GAMES.length + ' games' : shown + ' of ' + GAMES.length;
 
-  const pool = GAMES.filter(x => !x.d && (group === 'All' || x.g === group) && matches(x, q));
+  const pool = GAMES.filter(x => !x.d && artPasses(x) && (group === 'All' || x.g === group) && matches(x, q));
   shuffleBtn.disabled = pool.length === 0;
 
   if (settleNext && !REDUCED) {
