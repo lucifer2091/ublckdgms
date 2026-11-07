@@ -9,10 +9,12 @@
   var t = null;
   try { t = localStorage.getItem('backpage:theme'); } catch (e) {}
   if (t === 'light') t = 'day';      // old saved value
-  if (t !== 'dusk' && t !== 'day') t = 'night';
+  if (t === 'dark') t = 'night';     // old saved value
+  var ok = ['night','dusk','abyss','matcha','day'];
+  if (ok.indexOf(t) < 0) t = 'night';
   if (t !== 'night') document.documentElement.setAttribute('data-theme', t);
   document.querySelector('meta[name="theme-color"]').setAttribute('content',
-    t === 'dusk' ? '#14121f' : (t === 'day' ? '#f8f3e9' : '#171412'));
+    { dusk:'#14121f', abyss:'#081418', matcha:'#f1f3e6', day:'#f8f3e9' }[t] || '#171412');
 })();
 </script>
 <title>Backpage</title>
@@ -68,6 +70,46 @@ html[data-theme="dusk"]{
   --accent:#a78bfa;
   --tile:#171324;
   --stage:#0a0813;
+}
+
+html[data-theme="abyss"]{
+  color-scheme:dark;
+  --paper:#081418;
+  --card:#0f222a;
+  --ink:#e0ebeb;
+  --muted:#9cb4b4;
+  --faint:#6c8587;
+  --rule:#1c3138;
+  --edge:#2d454d;
+  --hover:#142a32;
+  --press:#172f37;
+  --focus:#3d5a63;
+  --dot:#274149;
+  --wash:#133a33;
+  --sel:#153f40;
+  --accent:#37c1a8;
+  --tile:#0c1c21;
+  --stage:#050e12;
+}
+
+html[data-theme="matcha"]{
+  color-scheme:light;
+  --paper:#f1f3e6;
+  --card:#fdfcf2;
+  --ink:#222a1f;
+  --muted:#606a55;
+  --faint:#8f987f;
+  --rule:#dce2cf;
+  --edge:#bfc9ae;
+  --hover:#ffffff;
+  --press:#edefe1;
+  --focus:#b7c3a2;
+  --dot:#c6cfbb;
+  --wash:#e9efda;
+  --sel:#dde7c9;
+  --accent:#577b31;
+  --tile:#2c2d21;
+  --stage:#12100c;
 }
 
 html[data-theme="day"]{
@@ -256,6 +298,8 @@ header::after{
 }
 .sw-night{background:linear-gradient(135deg, #4a3322 0%, #171412 62%)}
 .sw-dusk{background:linear-gradient(135deg, #7a63c4 0%, #14121f 66%)}
+.sw-abyss{background:linear-gradient(135deg, #37c1a8 0%, #081418 68%)}
+.sw-matcha{background:linear-gradient(135deg, #7ba250 0%, #c9d6a5 55%, #f2f4e9 100%)}
 .sw-day{background:linear-gradient(135deg, #ffd9a0 0%, #f6efdf 60%, #fffdf6 100%)}
 
 .search{position:relative}
@@ -440,9 +484,6 @@ header::after{
   color:color-mix(in oklab, var(--ga, var(--accent)) 74%, #fff);
   white-space:nowrap;
 }
-html[data-theme="day"] .sect-head .n{
-  color:color-mix(in oklab, var(--ga, var(--accent)) 68%, var(--ink));
-}
 .sect-head .rule{
   flex:1;height:1px;transform:translateY(-.25rem);margin-left:.55rem;
   background:linear-gradient(90deg,
@@ -532,20 +573,52 @@ html[data-theme="dusk"] .card.plate{
   background:radial-gradient(120% 130% at 24% 42%, color-mix(in oklab, var(--ga,#8a7bb8) 20%, #241f33) 0%, #171225 48%, #0b0914 100%);
 }
 
+html[data-theme="abyss"] .card::before{
+  background:
+    linear-gradient(90deg, rgba(5,19,24,.90) 0%, rgba(5,19,24,.84) 34%, rgba(5,19,24,.70) 54%, rgba(5,19,24,.42) 66%, rgba(5,19,24,.20) 80%, rgba(5,19,24,.58) 100%),
+    radial-gradient(42% 100% at 94% 50%, rgba(5,19,24,.76) 0%, rgba(5,19,24,.50) 55%, rgba(5,19,24,0) 100%),
+    linear-gradient(0deg, rgba(5,19,24,.62) 0%, rgba(5,19,24,0) 42%, rgba(5,19,24,.22) 100%);
+  box-shadow:inset 0 0 2.2rem rgba(2,8,12,.6);
+}
+html[data-theme="abyss"] .card__art{filter:saturate(.94) contrast(1.06) brightness(.96)}
+html[data-theme="abyss"] .card:hover .card__art{filter:saturate(1.02) contrast(1.07) brightness(1.02);transform:scale(1.035)}
+html[data-theme="abyss"] .card.plate::before{
+  background:radial-gradient(130% 150% at 18% 46%, color-mix(in oklab, var(--ga, #5a8f87) 22%, rgba(30,50,50,.6)) 0%, rgba(16,30,32,.76) 52%, rgba(6,14,16,.94) 100%);
+}
+html[data-theme="abyss"] .card.plate{
+  background:radial-gradient(120% 130% at 24% 42%, color-mix(in oklab, var(--ga,#5a8f87) 20%, #1c2b2d) 0%, #131f22 48%, #080f12 100%);
+}
+
+html[data-theme="matcha"] .card::before{
+  background:
+    linear-gradient(90deg, rgba(22,26,12,.90) 0%, rgba(22,26,12,.84) 34%, rgba(22,26,12,.70) 54%, rgba(22,26,12,.42) 66%, rgba(22,26,12,.06) 80%, rgba(22,26,12,.30) 100%),
+    radial-gradient(42% 100% at 94% 50%, rgba(22,26,12,.76) 0%, rgba(22,26,12,.50) 55%, rgba(22,26,12,0) 100%),
+    linear-gradient(0deg, rgba(22,26,12,.62) 0%, rgba(22,26,12,0) 42%, rgba(22,26,12,.22) 100%);
+  box-shadow:inset 0 0 2.2rem rgba(10,14,4,.38);
+}
+html[data-theme="matcha"] .card__art{filter:saturate(1.3) contrast(1.02) brightness(1)}
+html[data-theme="matcha"] .card:hover .card__art{filter:saturate(1.45) contrast(1.04) brightness(1.04);transform:scale(1.035)}
+html[data-theme="matcha"] .card.plate::before{
+  background:radial-gradient(130% 150% at 18% 46%, color-mix(in oklab, var(--ga, #7a8a4a) 26%, rgba(88,92,50,.6)) 0%, rgba(60,64,34,.72) 52%, rgba(34,36,19,.92) 100%);
+}
+html[data-theme="matcha"] .card.plate{
+  background:radial-gradient(120% 130% at 24% 42%, color-mix(in oklab, var(--ga,#7a8a4a) 28%, #565f3a) 0%, #40462c 48%, #272c1c 100%);
+}
+
 html[data-theme="day"] .card::before{
   background:
-    linear-gradient(90deg, rgba(28,17,9,.90) 0%, rgba(28,17,9,.84) 34%, rgba(28,17,9,.70) 54%, rgba(28,17,9,.30) 66%, rgba(28,17,9,.08) 80%, rgba(28,17,9,.38) 100%),
-    radial-gradient(42% 100% at 94% 50%, rgba(28,17,9,.52) 0%, rgba(28,17,9,.32) 55%, rgba(28,17,9,0) 100%),
+    linear-gradient(90deg, rgba(28,17,9,.90) 0%, rgba(28,17,9,.84) 34%, rgba(28,17,9,.70) 54%, rgba(28,17,9,.42) 66%, rgba(28,17,9,.06) 80%, rgba(28,17,9,.30) 100%),
+    radial-gradient(42% 100% at 94% 50%, rgba(28,17,9,.76) 0%, rgba(28,17,9,.50) 55%, rgba(28,17,9,0) 100%),
     linear-gradient(0deg, rgba(28,17,9,.62) 0%, rgba(28,17,9,0) 42%, rgba(28,17,9,.22) 100%);
   box-shadow:inset 0 0 2.2rem rgba(20,10,4,.38);
 }
-html[data-theme="day"] .card__art{filter:saturate(1.05) contrast(1.02) brightness(1)}
-html[data-theme="day"] .card:hover .card__art{filter:saturate(1.12) contrast(1.04) brightness(1.04);transform:scale(1.035)}
+html[data-theme="day"] .card__art{filter:saturate(1.35) contrast(1.02) brightness(1)}
+html[data-theme="day"] .card:hover .card__art{filter:saturate(1.5) contrast(1.04) brightness(1.04);transform:scale(1.035)}
 html[data-theme="day"] .card.plate::before{
-  background:radial-gradient(130% 150% at 18% 46%, color-mix(in oklab, var(--ga, #8a6b4f) 24%, rgba(74,56,38,.6)) 0%, rgba(51,38,25,.76) 52%, rgba(32,23,16,.94) 100%);
+  background:radial-gradient(130% 150% at 18% 46%, color-mix(in oklab, var(--ga, #8a6b4f) 28%, rgba(96,76,53,.6)) 0%, rgba(60,46,33,.72) 52%, rgba(30,22,15,.92) 100%);
 }
 html[data-theme="day"] .card.plate{
-  background:radial-gradient(120% 130% at 24% 42%, color-mix(in oklab, var(--ga,#8a6b4f) 24%, #4a3826) 0%, #332619 48%, #201710 100%);
+  background:radial-gradient(120% 130% at 24% 42%, color-mix(in oklab, var(--ga,#8a6b4f) 30%, #57453a) 0%, #423326 48%, #2a2018 100%);
 }
 
 /* on phones the banners run full width, like the reference */
@@ -640,6 +713,36 @@ html[data-theme="day"] .card.plate{
   font-family:var(--head);font-style:italic;
   font-size:1.05rem;text-align:center;
 }
+
+/* light themes: weave group accents toward ink so light ramp colours still read on paper */
+html[data-theme="day"] .sect-head h2,
+html[data-theme="matcha"] .sect-head h2{border-bottom-color:color-mix(in oklab, var(--ga) 60%, var(--ink))}
+html[data-theme="day"] .sect-head h2::before,
+html[data-theme="matcha"] .sect-head h2::before{background:color-mix(in oklab, var(--ga) 58%, var(--ink))}
+html[data-theme="day"] .sect-head .rule,
+html[data-theme="matcha"] .sect-head .rule{background:linear-gradient(90deg, color-mix(in oklab, var(--ga) 42%, var(--ink)) 0, var(--rule) 46%, transparent)}
+html[data-theme="day"] .sect-head .n,
+html[data-theme="matcha"] .sect-head .n{color:color-mix(in oklab, var(--ga) 68%, var(--ink))}
+html[data-theme="day"] .card:hover,
+html[data-theme="matcha"] .card:hover{
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--ga) 55%, var(--ink)),
+    0 10px 26px -10px color-mix(in oklab, var(--ga) 48%, var(--ink)),
+    0 4px 14px -6px rgba(0,0,0,.25);
+}
+html[data-theme="day"] .card:focus-visible,
+html[data-theme="matcha"] .card:focus-visible{box-shadow:0 0 0 2px color-mix(in oklab, var(--ga) 62%, var(--ink))}
+html[data-theme="day"] .filters .group .dot,
+html[data-theme="matcha"] .filters .group .dot{background:color-mix(in oklab, var(--ga) 52%, var(--ink))}
+html[data-theme="day"] .filters button.on,
+html[data-theme="matcha"] .filters button.on{
+  border-color:color-mix(in oklab, var(--ga, var(--accent)) 52%, var(--ink));
+  background:color-mix(in oklab, var(--ga, var(--accent)) 18%, var(--card));
+}
+html[data-theme="day"] .recent-list a::before,
+html[data-theme="matcha"] .recent-list a::before{background:color-mix(in oklab, var(--ga) 55%, var(--ink))}
+html[data-theme="day"] .recent-list a:hover,
+html[data-theme="matcha"] .recent-list a:hover{border-color:color-mix(in oklab, var(--ga, var(--accent)) 55%, var(--ink))}
 
 main.wrap{padding-bottom:clamp(30px, 3.2rem, 60px)}
 
@@ -868,6 +971,12 @@ html.theming #overlay,html.theming #overlay *{transition:none !important}
         <button class="set-opt" type="button" data-t="dusk" role="menuitemradio" aria-checked="false">
           <span class="sw sw-dusk" aria-hidden="true"></span><span class="set-name">dusk</span><span class="set-desc">cool indigo</span>
         </button>
+        <button class="set-opt" type="button" data-t="abyss" role="menuitemradio" aria-checked="false">
+          <span class="sw sw-abyss" aria-hidden="true"></span><span class="set-name">abyss</span><span class="set-desc">deep sea</span>
+        </button>
+        <button class="set-opt" type="button" data-t="matcha" role="menuitemradio" aria-checked="false">
+          <span class="sw sw-matcha" aria-hidden="true"></span><span class="set-name">matcha</span><span class="set-desc">green tea</span>
+        </button>
         <button class="set-opt" type="button" data-t="day" role="menuitemradio" aria-checked="false">
           <span class="sw sw-day" aria-hidden="true"></span><span class="set-name">daylight</span><span class="set-desc">warm light</span>
         </button>
@@ -946,6 +1055,9 @@ const ovCopy = $('ovCopy'), ovFull = $('ovFull');
 const RECENT_KEY = 'backpage:recent';
 
 const CHANGES = [
+  {d:'6 nov 2026', t:'two more colour genres: abyss (deep sea) and matcha (green tea), joining night shift, dusk and daylight'},
+  {d:'6 nov 2026', t:'categories sorted by how many games they hold; group dots now run red to violet to off-white'},
+  {d:'6 nov 2026', t:'banner art brightened in daylight: edges stop being a near-black slab while titles keep their contrast'},
   {d:'6 nov 2026', t:'header (and the search bar) stay pinned while you scroll, sections and panels animate in, enter no longer reloads the page'},
   {d:'6 nov 2026', t:'themes moved into a settings menu, tiles get brighter in daylight and cooler at dusk, layout now scales fluidly between window sizes'},
   {d:'6 nov 2026', t:'full redesign: three colour themes (night shift, dusk, daylight), each game group gets its own colour, refreshed header, filters, tiles and overlays'},
@@ -1007,30 +1119,33 @@ logScrim.onclick = closeLog;
 $('logClose').onclick = closeLog;
 
 const PRESENT = ORDER.filter(g => GAMES.some(x => x.g === g));
+// display and most-significant-first: groups sorted by game count
+const GAMES_BY_GROUP = {};
+PRESENT.forEach(g => { GAMES_BY_GROUP[g] = GAMES.filter(x => x.g === g).length; });
+const GROUPED = PRESENT.slice().sort((a, b) => GAMES_BY_GROUP[b] - GAMES_BY_GROUP[a]);
 
-// one accent hue per game group; falls back to the theme accent
-const GROUP_ACCENTS = {
-  'Action & Shooters': '#e05545',
-  'Deltarune':         '#9d6bff',
-  'Emulators':         '#3fb6a8',
-  "Five Nights at Freddy's": '#7d5ba6',
-  'Flash Classics':    '#e6a23c',
-  'Experimental':      '#7ac74f',
-  'Horror':            '#d15563',
-  'Kindergarten':      '#4fb286',
-  'Minecraft':         '#77c65a',
-  'Platformers':       '#4d9de0',
-  'Puzzle & Strategy': '#9a86e8',
-  'Racing & Sports':   '#f0b429',
-  'RPG & Story':       '#de6b8f',
-  'Simulation & Idle': '#45c4b0',
-  'Territorial.io':    '#c9a227',
-  'Vex':               '#5aa9d6',
-  'Download Only':     '#a08a72'
-};
+// one warm palette for every group: red -> violet -> off-white, assigned in order
+function lerp3(a, b, t) {
+  return [0, 1, 2].map(i => Math.round(a[i] + (b[i] - a[i]) * t));
+}
+function toHex(c) {
+  return '#' + c.map(v => v.toString(16).padStart(2, '0')).join('');
+}
+function buildRamp(n) {
+  const RED = [232, 72, 74], VIOLET = [109, 75, 140], WHITE = [236, 231, 225];
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const t = n === 1 ? 0 : i / (n - 1);
+    out.push(toHex(t < .5 ? lerp3(RED, VIOLET, t * 2) : lerp3(VIOLET, WHITE, (t - .5) * 2)));
+  }
+  return out;
+}
+const RAMP = buildRamp(GROUPED.length);
 
 function accentFor(g) {
-  return GROUP_ACCENTS[g] || 'var(--accent)';
+  const i = GROUPED.indexOf(g);
+  if (i < 0) return 'var(--accent)';
+  return RAMP[Math.min(RAMP.length - 1, i)];
 }
 
 // shorter names for the chip row on tablet-window widths
@@ -1081,7 +1196,7 @@ function refreshCounts() {
   });
 }
 
-['All'].concat(PRESENT).forEach((name, i) => {
+['All'].concat(GROUPED).forEach((name, i) => {
   const li = document.createElement('li');
   const b = document.createElement('button');
   b.type = 'button';
@@ -1183,7 +1298,7 @@ function render() {
   const withReveal = (firstReveal || settleNext) && !REDUCED && !!revealIO;
   let shown = 0;
 
-  ORDER.forEach(g => {
+  GROUPED.forEach(g => {
     if (group !== 'All' && group !== g) return;
     const items = GAMES.filter(x => x.g === g && artPasses(x) && matches(x, q));
     if (!items.length) return;
@@ -1454,9 +1569,11 @@ const THEME_KEY = 'backpage:theme';
 let themeTimer = null;
 
 const THEMES = [
-  { id:'night', label:'night shift', bg:'#171412' },
-  { id:'dusk',  label:'dusk',        bg:'#14121f' },
-  { id:'day',   label:'daylight',    bg:'#f8f3e9' }
+  { id:'night',  label:'night shift', bg:'#171412' },
+  { id:'dusk',   label:'dusk',        bg:'#14121f' },
+  { id:'abyss',  label:'abyss',       bg:'#081418' },
+  { id:'matcha', label:'matcha',      bg:'#f1f3e6' },
+  { id:'day',    label:'daylight',    bg:'#f8f3e9' }
 ];
 
 function currentTheme() {
