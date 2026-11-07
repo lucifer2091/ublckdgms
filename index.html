@@ -14,7 +14,7 @@
   if (ok.indexOf(t) < 0) t = 'night';
   if (t !== 'night') document.documentElement.setAttribute('data-theme', t);
   document.querySelector('meta[name="theme-color"]').setAttribute('content',
-    { dusk:'#14121f', abyss:'#081418', matcha:'#f1f3e6', day:'#f8f3e9' }[t] || '#171412');
+    { dusk:'#14121f', abyss:'#081418', matcha:'#e7ead6', day:'#ece2d0' }[t] || '#171412');
 })();
 </script>
 <title>Backpage</title>
@@ -94,19 +94,19 @@ html[data-theme="abyss"]{
 
 html[data-theme="matcha"]{
   color-scheme:light;
-  --paper:#f1f3e6;
-  --card:#fdfcf2;
+  --paper:#e7ead6;
+  --card:#f4f4e5;
   --ink:#222a1f;
-  --muted:#606a55;
-  --faint:#8f987f;
-  --rule:#dce2cf;
-  --edge:#bfc9ae;
-  --hover:#ffffff;
-  --press:#edefe1;
-  --focus:#b7c3a2;
-  --dot:#c6cfbb;
-  --wash:#e9efda;
-  --sel:#dde7c9;
+  --muted:#5d674f;
+  --faint:#8d947d;
+  --rule:#cfd5ba;
+  --edge:#b3b89c;
+  --hover:#f9f9ec;
+  --press:#e3e5d0;
+  --focus:#a9b18c;
+  --dot:#c2c8ae;
+  --wash:#e2e8cc;
+  --sel:#d4ddba;
   --accent:#577b31;
   --tile:#2c2d21;
   --stage:#12100c;
@@ -114,19 +114,19 @@ html[data-theme="matcha"]{
 
 html[data-theme="day"]{
   color-scheme:light;
-  --paper:#f8f3e9;
-  --card:#fffdf6;
+  --paper:#ece2d0;
+  --card:#f6efe1;
   --ink:#211d19;
   --muted:#6e675e;
   --faint:#a1968a;
-  --rule:#e6dcc9;
-  --edge:#cfc3ae;
-  --hover:#ffffff;
-  --press:#f3ecdd;
-  --focus:#c2b7a4;
-  --dot:#d3c7b4;
-  --wash:#f7e7d6;
-  --sel:#eddffc;
+  --rule:#d9cfba;
+  --edge:#bdb29e;
+  --hover:#fcf9ef;
+  --press:#e8e0cf;
+  --focus:#ac9f8c;
+  --dot:#d0c5ae;
+  --wash:#ebdccb;
+  --sel:#dfd1bf;
   --accent:#c2471d;
   --tile:#2b2114;
   --stage:#171310;
@@ -139,6 +139,8 @@ html{
 }
 body{
   margin:0;
+  text-align:left;
+  max-width:calc(100% - 1.9rem);
   background:
     radial-gradient(1100px 460px at 18% -12%, color-mix(in oklab, var(--accent) 7%, transparent), transparent 72%),
     radial-gradient(900px 420px at 88% -14%, color-mix(in oklab, var(--ga, var(--accent)) 6%, transparent), transparent 74%),
@@ -299,8 +301,8 @@ header::after{
 .sw-night{background:linear-gradient(135deg, #4a3322 0%, #171412 62%)}
 .sw-dusk{background:linear-gradient(135deg, #7a63c4 0%, #14121f 66%)}
 .sw-abyss{background:linear-gradient(135deg, #37c1a8 0%, #081418 68%)}
-.sw-matcha{background:linear-gradient(135deg, #7ba250 0%, #c9d6a5 55%, #f2f4e9 100%)}
-.sw-day{background:linear-gradient(135deg, #ffd9a0 0%, #f6efdf 60%, #fffdf6 100%)}
+.sw-matcha{background:linear-gradient(135deg, #7ba250 0%, #c9d6a5 55%, #e7ead6 100%)}
+.sw-day{background:linear-gradient(135deg, #ffd9a0 0%, #ece2d0 60%, #f6efe1 100%)}
 
 .search{position:relative}
 .search::after{
@@ -532,20 +534,20 @@ header::after{
 .card__art{
   position:absolute;inset:0;
   background-size:cover;background-position:center;
-  filter:saturate(.9) contrast(1.04) brightness(.97);
+  filter:saturate(.96) contrast(1.06) brightness(1);
   transform:scale(1);
   transition:filter 200ms linear, transform 320ms var(--ease);
 }
-.card:hover .card__art{filter:saturate(1) contrast(1.05) brightness(1.03);transform:scale(1.035)}
+.card:hover .card__art{filter:saturate(1.04) contrast(1.08) brightness(1.07);transform:scale(1.035)}
 
 /* scrim: darkens the left where the title sits, and the outer edges */
 .card::before{
   content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:
-    linear-gradient(90deg, rgba(8,9,12,.90) 0%, rgba(8,9,12,.84) 34%, rgba(8,9,12,.70) 54%, rgba(8,9,12,.42) 66%, rgba(8,9,12,.20) 80%, rgba(8,9,12,.58) 100%),
-    radial-gradient(42% 100% at 94% 50%, rgba(8,9,12,.76) 0%, rgba(8,9,12,.50) 55%, rgba(8,9,12,0) 100%),
-    linear-gradient(0deg, rgba(8,9,12,.66) 0%, rgba(8,9,12,0) 44%, rgba(8,9,12,.24) 100%);
-  box-shadow:inset 0 0 2.2rem rgba(0,0,0,.55);
+    linear-gradient(90deg, rgba(8,9,12,.90) 0%, rgba(8,9,12,.84) 34%, rgba(8,9,12,.70) 54%, rgba(8,9,12,.42) 66%, rgba(8,9,12,.08) 80%, rgba(8,9,12,.34) 100%),
+    radial-gradient(42% 100% at 94% 50%, rgba(8,9,12,.6) 0%, rgba(8,9,12,.4) 55%, rgba(8,9,12,0) 100%),
+    linear-gradient(0deg, rgba(8,9,12,.54) 0%, rgba(8,9,12,0) 44%, rgba(8,9,12,.2) 100%);
+  box-shadow:inset 0 0 2.2rem rgba(0,0,0,.5);
 }
 .card.plate::before{
   background:radial-gradient(130% 150% at 18% 46%, color-mix(in oklab, var(--ga, #8b7d6d) 26%, rgba(62,58,50,.6)) 0%, rgba(24,21,17,.74) 52%, rgba(12,10,8,.94) 100%);
@@ -559,13 +561,13 @@ header::after{
    brightness follow the theme (night warm-dark, dusk cool-dark, day warm-light) */
 html[data-theme="dusk"] .card::before{
   background:
-    linear-gradient(90deg, rgba(6,5,14,.90) 0%, rgba(6,5,14,.84) 34%, rgba(6,5,14,.70) 54%, rgba(6,5,14,.42) 66%, rgba(6,5,14,.20) 80%, rgba(6,5,14,.58) 100%),
-    radial-gradient(42% 100% at 94% 50%, rgba(6,5,14,.76) 0%, rgba(6,5,14,.50) 55%, rgba(6,5,14,0) 100%),
-    linear-gradient(0deg, rgba(6,5,14,.62) 0%, rgba(6,5,14,0) 42%, rgba(6,5,14,.22) 100%);
-  box-shadow:inset 0 0 2.2rem rgba(2,1,10,.55);
+    linear-gradient(90deg, rgba(6,5,14,.88) 0%, rgba(6,5,14,.82) 34%, rgba(6,5,14,.68) 54%, rgba(6,5,14,.40) 66%, rgba(6,5,14,.09) 80%, rgba(6,5,14,.34) 100%),
+    radial-gradient(42% 100% at 94% 50%, rgba(6,5,14,.58) 0%, rgba(6,5,14,.4) 55%, rgba(6,5,14,0) 100%),
+    linear-gradient(0deg, rgba(6,5,14,.54) 0%, rgba(6,5,14,0) 42%, rgba(6,5,14,.2) 100%);
+  box-shadow:inset 0 0 2.2rem rgba(2,1,10,.5);
 }
-html[data-theme="dusk"] .card__art{filter:saturate(.92) contrast(1.05) brightness(.94)}
-html[data-theme="dusk"] .card:hover .card__art{filter:saturate(1) contrast(1.06) brightness(1.01);transform:scale(1.035)}
+html[data-theme="dusk"] .card__art{filter:saturate(.98) contrast(1.07) brightness(1)}
+html[data-theme="dusk"] .card:hover .card__art{filter:saturate(1.02) contrast(1.08) brightness(1.04);transform:scale(1.035)}
 html[data-theme="dusk"] .card.plate::before{
   background:radial-gradient(130% 150% at 18% 46%, color-mix(in oklab, var(--ga, #8a7bb8) 22%, rgba(40,34,60,.6)) 0%, rgba(22,18,34,.76) 52%, rgba(10,8,18,.94) 100%);
 }
@@ -575,13 +577,13 @@ html[data-theme="dusk"] .card.plate{
 
 html[data-theme="abyss"] .card::before{
   background:
-    linear-gradient(90deg, rgba(5,19,24,.90) 0%, rgba(5,19,24,.84) 34%, rgba(5,19,24,.70) 54%, rgba(5,19,24,.42) 66%, rgba(5,19,24,.20) 80%, rgba(5,19,24,.58) 100%),
-    radial-gradient(42% 100% at 94% 50%, rgba(5,19,24,.76) 0%, rgba(5,19,24,.50) 55%, rgba(5,19,24,0) 100%),
-    linear-gradient(0deg, rgba(5,19,24,.62) 0%, rgba(5,19,24,0) 42%, rgba(5,19,24,.22) 100%);
-  box-shadow:inset 0 0 2.2rem rgba(2,8,12,.6);
+    linear-gradient(90deg, rgba(5,19,24,.90) 0%, rgba(5,19,24,.84) 34%, rgba(5,19,24,.70) 54%, rgba(5,19,24,.42) 66%, rgba(5,19,24,.09) 80%, rgba(5,19,24,.34) 100%),
+    radial-gradient(42% 100% at 94% 50%, rgba(5,19,24,.58) 0%, rgba(5,19,24,.4) 55%, rgba(5,19,24,0) 100%),
+    linear-gradient(0deg, rgba(5,19,24,.54) 0%, rgba(5,19,24,0) 42%, rgba(5,19,24,.2) 100%);
+  box-shadow:inset 0 0 2.2rem rgba(2,8,12,.54);
 }
-html[data-theme="abyss"] .card__art{filter:saturate(.94) contrast(1.06) brightness(.96)}
-html[data-theme="abyss"] .card:hover .card__art{filter:saturate(1.02) contrast(1.07) brightness(1.02);transform:scale(1.035)}
+html[data-theme="abyss"] .card__art{filter:saturate(.98) contrast(1.07) brightness(1)}
+html[data-theme="abyss"] .card:hover .card__art{filter:saturate(1.02) contrast(1.08) brightness(1.04);transform:scale(1.035)}
 html[data-theme="abyss"] .card.plate::before{
   background:radial-gradient(130% 150% at 18% 46%, color-mix(in oklab, var(--ga, #5a8f87) 22%, rgba(30,50,50,.6)) 0%, rgba(16,30,32,.76) 52%, rgba(6,14,16,.94) 100%);
 }
@@ -590,14 +592,21 @@ html[data-theme="abyss"] .card.plate{
 }
 
 html[data-theme="matcha"] .card::before{
-  background:
-    linear-gradient(90deg, rgba(22,26,12,.90) 0%, rgba(22,26,12,.84) 34%, rgba(22,26,12,.70) 54%, rgba(22,26,12,.42) 66%, rgba(22,26,12,.06) 80%, rgba(22,26,12,.30) 100%),
-    radial-gradient(42% 100% at 94% 50%, rgba(22,26,12,.76) 0%, rgba(22,26,12,.50) 55%, rgba(22,26,12,0) 100%),
-    linear-gradient(0deg, rgba(22,26,12,.62) 0%, rgba(22,26,12,0) 42%, rgba(22,26,12,.22) 100%);
-  box-shadow:inset 0 0 2.2rem rgba(10,14,4,.38);
+  background:none;
+  box-shadow:none;
 }
-html[data-theme="matcha"] .card__art{filter:saturate(1.3) contrast(1.02) brightness(1)}
-html[data-theme="matcha"] .card:hover .card__art{filter:saturate(1.45) contrast(1.04) brightness(1.04);transform:scale(1.035)}
+html[data-theme="matcha"] .card__t{
+  color:#f7f1e6;
+  -webkit-text-stroke:.025em rgba(0,0,0,.72);
+  paint-order:stroke fill;
+  text-shadow:0 1px 3px rgba(0,0,0,.78), 0 0 8px rgba(0,0,0,.38);
+}
+html[data-theme="matcha"] .card.plate .card__t{
+  color:#f1ebdf;
+  text-shadow:0 1px 3px rgba(0,0,0,.85), 0 0 12px rgba(0,0,0,.55);
+}
+html[data-theme="matcha"] .card__art{filter:saturate(1.15) contrast(1.02) brightness(1)}
+html[data-theme="matcha"] .card:hover .card__art{filter:saturate(1.24) contrast(1.04) brightness(1.04);transform:scale(1.035)}
 html[data-theme="matcha"] .card.plate::before{
   background:radial-gradient(130% 150% at 18% 46%, color-mix(in oklab, var(--ga, #7a8a4a) 26%, rgba(88,92,50,.6)) 0%, rgba(60,64,34,.72) 52%, rgba(34,36,19,.92) 100%);
 }
@@ -606,14 +615,21 @@ html[data-theme="matcha"] .card.plate{
 }
 
 html[data-theme="day"] .card::before{
-  background:
-    linear-gradient(90deg, rgba(28,17,9,.90) 0%, rgba(28,17,9,.84) 34%, rgba(28,17,9,.70) 54%, rgba(28,17,9,.42) 66%, rgba(28,17,9,.06) 80%, rgba(28,17,9,.30) 100%),
-    radial-gradient(42% 100% at 94% 50%, rgba(28,17,9,.76) 0%, rgba(28,17,9,.50) 55%, rgba(28,17,9,0) 100%),
-    linear-gradient(0deg, rgba(28,17,9,.62) 0%, rgba(28,17,9,0) 42%, rgba(28,17,9,.22) 100%);
-  box-shadow:inset 0 0 2.2rem rgba(20,10,4,.38);
+  background:none;
+  box-shadow:none;
 }
-html[data-theme="day"] .card__art{filter:saturate(1.35) contrast(1.02) brightness(1)}
-html[data-theme="day"] .card:hover .card__art{filter:saturate(1.5) contrast(1.04) brightness(1.04);transform:scale(1.035)}
+html[data-theme="day"] .card__t{
+  color:#f7f1e6;
+  -webkit-text-stroke:.025em rgba(0,0,0,.72);
+  paint-order:stroke fill;
+  text-shadow:0 1px 3px rgba(0,0,0,.78), 0 0 8px rgba(0,0,0,.38);
+}
+html[data-theme="day"] .card.plate .card__t{
+  color:#f1ebdf;
+  text-shadow:0 1px 3px rgba(0,0,0,.85), 0 0 12px rgba(0,0,0,.55);
+}
+html[data-theme="day"] .card__art{filter:saturate(1.08) contrast(1.02) brightness(1.08)}
+html[data-theme="day"] .card:hover .card__art{filter:saturate(1.16) contrast(1.04) brightness(1.14);transform:scale(1.035)}
 html[data-theme="day"] .card.plate::before{
   background:radial-gradient(130% 150% at 18% 46%, color-mix(in oklab, var(--ga, #8a6b4f) 28%, rgba(96,76,53,.6)) 0%, rgba(60,46,33,.72) 52%, rgba(30,22,15,.92) 100%);
 }
@@ -677,13 +693,13 @@ html[data-theme="day"] .card.plate{
   color:rgba(241,235,223,.92);
   padding:.08rem .48rem;
   border-radius:99px;
-  background:rgba(10,9,8,.52);
+  background:#14100e;
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);
   white-space:nowrap;
   text-shadow:0 1px 3px rgba(0,0,0,.8);
   transition:background-color 150ms linear, color 150ms linear;
 }
-.card:hover .card__s{background-color:rgba(10,9,8,.68)}
+.card:hover .card__s{background-color:rgba(16,12,10,.9)}
 .card.dl .card__s{
   color:color-mix(in oklab, var(--accent) 62%, #fff);
   box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--accent) 55%, transparent);
@@ -703,7 +719,7 @@ html[data-theme="day"] .card.plate{
 
 .card.dl .card__t::after{
   content:"\2193";color:color-mix(in oklab, var(--accent) 62%, #fff);margin-left:.28rem;font-size:.8em;
-  display:inline-block;
+  display:inline-block;vertical-align:middle;
   transition:transform var(--fast) var(--ease);
 }
 .card.dl:hover .card__t::after{transform:translateY(.12em)}
@@ -1055,6 +1071,7 @@ const ovCopy = $('ovCopy'), ovFull = $('ovFull');
 const RECENT_KEY = 'backpage:recent';
 
 const CHANGES = [
+  {d:'7 nov 2026', t:'rebalanced every theme: dark tiles keep readable titles, daylight and matcha show bright artwork without a tile overlay, and light-theme title alignment and colouring were cleaned up'},
   {d:'6 nov 2026', t:'two more colour genres: abyss (deep sea) and matcha (green tea), joining night shift, dusk and daylight'},
   {d:'6 nov 2026', t:'categories sorted by how many games they hold; group dots now run red to violet to off-white'},
   {d:'6 nov 2026', t:'banner art brightened in daylight: edges stop being a near-black slab while titles keep their contrast'},
@@ -1572,8 +1589,8 @@ const THEMES = [
   { id:'night',  label:'night shift', bg:'#171412' },
   { id:'dusk',   label:'dusk',        bg:'#14121f' },
   { id:'abyss',  label:'abyss',       bg:'#081418' },
-  { id:'matcha', label:'matcha',      bg:'#f1f3e6' },
-  { id:'day',    label:'daylight',    bg:'#f8f3e9' }
+  { id:'matcha', label:'matcha',      bg:'#e7ead6' },
+  { id:'day',    label:'daylight',    bg:'#ece2d0' }
 ];
 
 function currentTheme() {
