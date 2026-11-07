@@ -143,6 +143,7 @@ header{border-bottom:1px solid var(--rule)}
   border-radius:8px;
   background:var(--card);
 }
+.recent[hidden]{display:none}
 .recent-lab{
   display:block;font-family:var(--head);font-weight:700;letter-spacing:.008em;
   font-size:clamp(.9rem, 1.6vw, 1.25rem);color:var(--ink);
@@ -159,27 +160,49 @@ header{border-bottom:1px solid var(--rule)}
 .recent-list a:hover{color:var(--ink);border-color:var(--accent);background:rgba(180,69,31,.06)}
 .recent-list a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
+.filter-bar{display:flex;flex-direction:column;gap:.38rem;margin:0 0 clamp(16px, 1.8rem, 26px)}
 .filters{
-  display:flex;flex-wrap:wrap;
-  margin:clamp(18px, 1.7rem, 30px) 0 clamp(22px, 2rem, 36px);
-  padding:0;list-style:none;
-}
-.filters li{margin:0 0 .38rem;white-space:nowrap}
-.filters li:not(:last-child)::after{content:"\00b7";color:var(--dot);padding:0 .62rem}
-.filters{
-  display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;
-  margin:0 0 clamp(16px, 1.8rem, 26px);padding:0;list-style:none;
+  display:flex;flex-wrap:wrap;align-items:center;gap:.34rem;
+  margin:0;padding:0;list-style:none;
 }
 .filters li{margin:0}
 .filters button{
   background:none;border:1px solid var(--rule);border-radius:6px;
-  padding:.28rem .66rem;margin:0;cursor:pointer;
-  font:inherit;font-size:.82rem;color:var(--muted);
+  padding:.24rem .55rem;margin:0;cursor:pointer;
+  font:inherit;font-size:.78rem;color:var(--muted);
   transition:color var(--fast) linear,border-color var(--fast) linear,background var(--fast) linear;
 }
 .filters button:hover{color:var(--ink);border-color:var(--edge);background:var(--hover)}
 .filters button.on{color:var(--ink);border-color:var(--filter-border, var(--accent));background:var(--wash);font-weight:600}
+.filters button:disabled{opacity:.35;cursor:default;border-color:var(--rule);background:none;color:var(--muted)}
+.filters button.zero{opacity:.4}
+.filters button.zero:hover{opacity:.75}
+.filters .group.all{border-color:var(--edge)}
 .filter-count{font-size:.72rem;color:var(--faint);margin-left:.26rem}
+.filters--groups{
+  flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
+  scrollbar-width:none;-ms-overflow-style:none;
+  padding-bottom:.1rem;
+  -webkit-overflow-scrolling:touch;
+}
+.filters--groups::-webkit-scrollbar{display:none}
+.filters--groups li{flex:none}
+@media (max-width:1079px){
+  .filters--groups{
+    -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 2.2rem),transparent);
+    mask-image:linear-gradient(to right,#000 calc(100% - 2.2rem),transparent);
+  }
+}
+.filters--views{padding-top:.1rem;border-top:1px solid var(--rule)}
+@media (min-width:1080px){
+  .filter-bar{flex-direction:row;flex-wrap:wrap;align-items:center;gap:.4rem .9rem}
+  .filters--groups{flex-wrap:wrap;overflow:visible}
+  .filters--views{border-top:0;padding-top:0}
+  .filters--views::before{
+    content:"";width:1px;height:1.1rem;background:var(--rule);
+    margin-right:.5rem;align-self:center;
+  }
+}
 .filters .view.on{color:var(--accent);border-color:var(--accent);background:var(--wash)}
 .filters .shuffle{font-style:italic;color:var(--faint);padding:.22rem .5rem;border-color:transparent}
 .filters .shuffle:hover{color:var(--ink);border-color:var(--edge);background:var(--hover)}
@@ -500,7 +523,10 @@ html.theming #overlay,html.theming #overlay *{transition:none !important}
     <ul class="recent-list" id="recentList"></ul>
   </div>
 
-  <ul class="filters" id="filters"></ul>
+  <div class="filter-bar">
+    <ul class="filters filters--groups" id="filters" aria-label="game groups"></ul>
+    <ul class="filters filters--views" id="views" aria-label="tile views"></ul>
+  </div>
 
   <div id="sections"></div>
   <div class="empty" id="empty">Nothing matches that.</div>
@@ -539,12 +565,14 @@ let settleNext = false;
 const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const $ = id => document.getElementById(id);
-const listEl = $('sections'), emptyEl = $('empty'), countEl = $('count'), filterEl = $('filters');
+const listEl = $('sections'), emptyEl = $('empty'), countEl = $('count'), filterEl = $('filters'), viewEl = $('views');
 const overlay = $('overlay'), frame = $('frame'), ovName = $('ovName'), ovNote = $('ovNote'), ovNew = $('ovNew');
 const ovCopy = $('ovCopy'), ovFull = $('ovFull');
 const RECENT_KEY = 'backpage:recent';
 
 const CHANGES = [
+  {d:'6 nov 2026', t:'fixed a script error that could leave the whole page blank'},
+  {d:'6 nov 2026', t:'filter bar reworked: a count on every group, all tiles / with banners / plates only views, and it scrolls instead of stacking on phones'},
   {d:'5 nov 2026', t:'minecraft browser added under experimental features'},
   {d:'5 nov 2026', t:'tiles set to one even grid, so short titles no longer blow up into oversized banners'},
   {d:'5 nov 2026', t:'layout fixed for every screen: rows fill evenly, type scales up on big displays, the log sits where it should'},
@@ -602,7 +630,7 @@ $('logClose').onclick = closeLog;
 
 const PRESENT = ORDER.filter(g => GAMES.some(x => x.g === g));
 
-let group = 'All', term = '', artFilter = 'all'; // 'all' | 'art' | 'plates'
+let artFilter = 'all'; // 'all' | 'art' | 'plates'
 
 function artPasses(x) {
   if (artFilter === 'all') return true;
@@ -610,8 +638,28 @@ function artPasses(x) {
   return !x.i;
 }
 
-function groupCount(g) {
-  return GAMES.filter(x => x.g === g && artPasses(x)).length;
+const groupBtns = [];
+const viewBtns = [];
+
+function countFor(g) {
+  return g === 'All'
+    ? GAMES.filter(artPasses).length
+    : GAMES.filter(x => x.g === g && artPasses(x)).length;
+}
+
+function countView(v) {
+  if (v === 'all') return GAMES.length;
+  if (v === 'art') return GAMES.filter(x => !!x.i).length;
+  return GAMES.filter(x => !x.i).length;
+}
+
+function refreshCounts() {
+  groupBtns.forEach(b => {
+    const n = countFor(b.dataset.group);
+    const c = b.querySelector('.filter-count');
+    if (c) c.textContent = '(' + n + ')';
+    b.classList.toggle('zero', n === 0);
+  });
 }
 
 ['All'].concat(PRESENT).forEach((name, i) => {
@@ -619,49 +667,50 @@ function groupCount(g) {
   const b = document.createElement('button');
   b.type = 'button';
   b.className = 'group' + (name === 'All' ? ' all' : '');
+  b.dataset.group = name;
   b.textContent = name === 'All' ? 'all' : name;
   const c = document.createElement('span');
   c.className = 'filter-count';
-  c.textContent = '(' + (name === 'All' ? GAMES.length : groupCount(name)) + ')';
+  c.textContent = '(' + countFor(name) + ')';
   b.appendChild(c);
   if (i === 0) b.classList.add('on');
   b.onclick = () => {
     group = name;
-    filterEl.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    groupBtns.forEach(x => x.classList.toggle('on', x === b));
     settleNext = true;
     render();
   };
+  groupBtns.push(b);
   li.appendChild(b);
   filterEl.appendChild(li);
 });
 
 const views = [
-  { label: 'all', val: 'all' },
+  { label: 'all tiles', val: 'all' },
   { label: 'with banners', val: 'art' },
-  { label: 'plates', val: 'plates' }
+  { label: 'plates only', val: 'plates' }
 ];
+
 views.forEach(v => {
   const li = document.createElement('li');
   const b = document.createElement('button');
   b.type = 'button';
   b.className = 'view' + (artFilter === v.val ? ' on' : '');
+  b.dataset.view = v.val;
   b.textContent = v.label;
   const c = document.createElement('span');
   c.className = 'filter-count';
-  c.textContent = '(' + (v.val === 'all' ? GAMES.length : GAMES.filter(artPasses).length) + ')';
+  c.textContent = '(' + countView(v.val) + ')';
   b.appendChild(c);
   b.onclick = () => {
     artFilter = v.val;
-    filterEl.querySelectorAll('button.view').forEach(x => x.classList.toggle('on', x === b));
-    // update counts on all view buttons
-    views.forEach((vv, vi) => {
-      const btn = filterEl.querySelectorAll('button.view')[vi];
-      btn.querySelector('.filter-count').textContent = '(' + (vv.val === 'all' ? GAMES.length : GAMES.filter(artPasses).length) + ')';
-    });
+    viewBtns.forEach(x => x.classList.toggle('on', x === b));
+    refreshCounts();
     render();
   };
+  viewBtns.push(b);
   li.appendChild(b);
-  filterEl.appendChild(li);
+  viewEl.appendChild(li);
 });
 
 const shuffleLi = document.createElement('li');
@@ -677,7 +726,7 @@ shuffleBtn.onclick = () => {
   openGame(pool[Math.floor(Math.random() * pool.length)]);
 };
 shuffleLi.appendChild(shuffleBtn);
-filterEl.appendChild(shuffleLi);
+viewEl.appendChild(shuffleLi);
 
 function matches(x, q) {
   if (!q) return true;
