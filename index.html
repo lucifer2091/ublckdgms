@@ -18,6 +18,7 @@
 })();
 </script>
 <title>Backpage</title>
+<meta name="description" content="Backpage: a hand-kept index of browser games, sorted by shelf, playable in the overlay.">
 <style>
 /* =========================================================
    Backpage - design system
@@ -142,8 +143,7 @@ body{
   text-align:left;
   max-width:calc(100% - 1.9rem);
   background:
-    radial-gradient(1100px 460px at 18% -12%, color-mix(in oklab, var(--accent) 7%, transparent), transparent 72%),
-    radial-gradient(900px 420px at 88% -14%, color-mix(in oklab, var(--ga, var(--accent)) 6%, transparent), transparent 74%),
+    linear-gradient(180deg, color-mix(in oklab, var(--card) 30%, var(--paper)) 0, var(--paper) 280px),
     var(--paper);
   color:var(--ink);
   font:400 1rem/1.6 var(--serif);
@@ -196,52 +196,50 @@ a{color:inherit}
 
 header{
   position:sticky;top:0;z-index:30;
-  border-bottom:1px solid var(--rule);
-  background:
-    linear-gradient(180deg, color-mix(in oklab, var(--accent) 6%, var(--paper)), color-mix(in oklab, var(--paper) 90%, transparent) 82%),
-    var(--paper);
-  backdrop-filter:blur(10px) saturate(1.15);
-  -webkit-backdrop-filter:blur(10px) saturate(1.15);
+  border-bottom:0;
+  background:color-mix(in oklab, var(--paper) 86%, transparent);
+  backdrop-filter:blur(12px) saturate(1.1);
+  -webkit-backdrop-filter:blur(12px) saturate(1.1);
 }
 header::after{
-  content:"";position:absolute;left:0;right:0;bottom:-4px;height:1px;
-  background:linear-gradient(90deg, transparent, color-mix(in oklab, var(--accent) 55%, transparent) 30%, color-mix(in oklab, var(--accent) 55%, transparent) 70%, transparent);
+  content:"";position:absolute;left:0;right:0;bottom:0;height:5px;
+  border-top:1px solid var(--edge);
+  border-bottom:1px solid color-mix(in oklab, var(--edge) 45%, transparent);
   pointer-events:none;
 }
 .top{
   display:flex;align-items:baseline;flex-wrap:wrap;
   gap:clamp(10px, .9rem, 20px);
-  padding:clamp(12px, 1.1rem, 20px) 0 clamp(11px, 1rem, 18px);
+  padding:clamp(12px, 1.1rem, 20px) clamp(16px, 2.4vw, 40px) clamp(11px, 1rem, 18px);
 }
 .brand{
   display:inline-flex;align-items:baseline;gap:.5rem;
   font-family:var(--head);
-  font-size:clamp(1.18rem, 2.4vw, 1.45rem);font-weight:700;letter-spacing:-.005em;
+  font-size:clamp(1.28rem, 2.5vw, 1.55rem);font-weight:700;letter-spacing:-.01em;
 }
 .brand::before{
-  content:"";width:.5rem;height:.5rem;flex:none;align-self:center;
+  content:"";width:.44rem;height:.44rem;flex:none;align-self:center;
   transform:rotate(45deg);
-  background:linear-gradient(135deg, color-mix(in oklab, var(--accent) 78%, #fff), var(--accent));
-  box-shadow:0 0 8px color-mix(in oklab, var(--accent) 45%, transparent);
+  background:var(--accent);
 }
 .brand i{font-style:normal;color:var(--accent)}
 .top .grow{flex:1 1 1rem}
 .count{
-  border:1px solid var(--rule);border-radius:99px;
-  padding:.14rem .62rem;
-  background:color-mix(in oklab, var(--card) 55%, var(--paper));
+  padding:0;
+  background:none;border:0;
   font-family:var(--serif);font-style:italic;
-  font-size:.74rem;color:var(--muted);white-space:nowrap;
+  font-size:.8rem;color:var(--faint);white-space:nowrap;
   transition:opacity var(--fast) linear;
 }
 
-/* theme settings: menu button + dropdown panel */
-.set{position:relative}
+.set{
+  position:relative;align-self:center;
+}
 .set-btn{
   display:inline-flex;align-items:center;gap:.45rem;
-  background:var(--card);border:1px solid var(--rule);border-radius:99px;
-  padding:.24rem .62rem;cursor:pointer;
-  font:inherit;font-style:italic;font-size:.78rem;
+  background:none;border:0;border-bottom:1px solid transparent;border-radius:0;
+  padding:.26rem .3rem;cursor:pointer;
+  font:inherit;font-style:italic;font-size:.8rem;
   color:var(--muted);white-space:nowrap;
   transition:color var(--fast) linear, border-color var(--fast) linear;
 }
@@ -252,11 +250,11 @@ header::after{
   opacity:.55;
   transition:transform var(--fast) var(--ease);
 }
-.set-btn:hover{color:var(--ink);border-color:var(--edge)}
+.set-btn:hover{color:var(--ink)}
+.set-btn:hover::after{opacity:.8}
 .set-btn[aria-expanded="true"]{
   color:var(--ink);
-  border-color:color-mix(in oklab, var(--accent) 45%, var(--rule));
-  background:color-mix(in oklab, var(--accent) 10%, var(--card));
+  border-bottom:1px solid color-mix(in oklab, var(--accent) 55%, transparent);
 }
 .set-btn[aria-expanded="true"]::after{transform:rotate(225deg)}
 .set-btn .sw{width:.95rem;height:.62rem;border-radius:3px;flex:none;
@@ -266,8 +264,8 @@ header::after{
   min-width:16.5rem;
   background:var(--card);
   border:1px solid var(--rule);
-  border-radius:12px;
-  box-shadow:0 8px 28px -6px rgba(0,0,0,.45), 0 2px 8px rgba(0,0,0,.28);
+  border-radius:10px;
+  box-shadow:0 14px 34px -10px rgba(0,0,0,.42);
   padding:.45rem;
 }
 .set-panel[hidden]{display:none}
@@ -294,8 +292,8 @@ header::after{
 .set-opt .set-name{font-size:.84rem;white-space:nowrap}
 .set-opt .set-desc{margin-left:auto;font-style:italic;font-size:.72rem;color:var(--faint)}
 .set-opt[aria-checked="true"]::after{
-  content:"";width:.4rem;height:.4rem;flex:none;
-  background:var(--accent);transform:rotate(45deg);
+  content:"";width:.34rem;height:.34rem;flex:none;
+  background:var(--accent);border-radius:99px;
   margin-left:.15rem;
 }
 .sw-night{background:linear-gradient(135deg, #4a3322 0%, #171412 62%)}
@@ -316,51 +314,48 @@ header::after{
 }
 .search input{
   width:clamp(130px, 18vw, 220px);
-  padding:.36rem .6rem .36rem 1.85rem;
-  border:1px solid var(--rule);border-radius:99px;
-  background:var(--card);color:var(--ink);
+  padding:.32rem .6rem .34rem 1.8rem;
+  border:0;border-bottom:1px solid var(--edge);border-radius:0;
+  background:none;color:var(--ink);
   font:inherit;font-size:.84rem;outline:none;
-  transition:border-color var(--fast) linear, background-color var(--fast) linear;
+  transition:border-color var(--fast) linear;
 }
-.search input:focus{border-color:color-mix(in oklab, var(--accent) 55%, var(--rule));background:var(--hover)}
+.search input:focus{border-bottom-color:color-mix(in oklab, var(--accent) 70%, var(--edge))}
 .search input::placeholder{color:var(--faint)}
 
 /* ---------------------------------------- recently played */
 
 .recent{
-  display:flex;flex-direction:column;gap:.55rem;
-  margin:clamp(14px,1.4rem,24px) 0 clamp(20px, 2rem, 32px);
-  padding:clamp(12px, 1.4rem, 20px) clamp(16px, 2.4vw, 40px);
-  border:1px solid color-mix(in oklab, var(--accent) 22%, var(--rule));
-  border-radius:12px;
-  background:
-    linear-gradient(180deg, color-mix(in oklab, var(--accent) 5%, var(--card)), var(--card) 55%);
+  display:flex;flex-direction:column;gap:.5rem;
+  margin:clamp(16px,1.6rem,28px) 0 clamp(18px,2rem,30px);
 }
 .recent[hidden]{display:none}
 .recent-lab{
-  display:block;font-family:var(--head);font-weight:700;letter-spacing:.008em;
-  font-size:clamp(.9rem, 1.6vw, 1.25rem);color:var(--ink);
-  margin:0 0 .25rem;
+  display:flex;align-items:center;gap:.6rem;
+  font-family:var(--head);font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;
+  font-size:.72rem;color:var(--muted);
+  margin:0;
 }
-.recent-list{display:flex;flex-wrap:wrap;margin:0;padding:0;list-style:none;gap:.4rem}
-.recent-list li{margin:0}
+.recent-lab::after{
+  content:"";flex:1;height:1px;
+  background:linear-gradient(90deg, var(--rule), transparent);
+}
+.recent-list{display:flex;flex-wrap:wrap;align-items:center;margin:0;padding:0;list-style:none;gap:.15rem 1.1rem}
 .recent-list a{
   display:inline-flex;align-items:center;gap:.42rem;
-  color:var(--muted);text-decoration:none;font-size:.86rem;
-  padding:.16rem .62rem .16rem .5rem;border-radius:99px;
-  border:1px solid var(--rule);
-  background:color-mix(in oklab, var(--card) 70%, var(--paper));
-  transition:border-color var(--fast) linear, color var(--fast) linear, transform var(--fast) var(--ease);
+  color:var(--muted);text-decoration:none;font-size:.86rem;font-style:italic;
+  padding:.06rem 0;
+  border-bottom:1px solid transparent;
+  transition:border-color var(--fast) linear, color var(--fast) linear;
 }
 .recent-list a::before{
-  content:"";width:.5rem;height:.5rem;flex:none;border-radius:99px;
+  content:"";width:.44rem;height:.44rem;flex:none;border-radius:99px;
   background:var(--ga, var(--accent));
-  box-shadow:0 0 0 1px color-mix(in oklab, var(--ink) 14%, transparent);
 }
 .recent-list a:hover{
   color:var(--ink);
-  border-color:color-mix(in oklab, var(--ga, var(--accent)) 60%, var(--rule));
-  transform:translateY(-1px);
+  border-bottom-color:color-mix(in oklab, var(--ga, var(--accent)) 65%, transparent);
 }
 .recent-list a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
@@ -371,44 +366,41 @@ header::after{
   margin:0 0 clamp(16px, 1.8rem, 26px);
 }
 .filters{
-  display:flex;flex-wrap:wrap;align-items:center;gap:.34rem;
+  display:flex;flex-wrap:wrap;align-items:center;gap:.28rem .55rem;
   margin:0;padding:0;list-style:none;
 }
 .filters li{margin:0}
 .filters button{
-  display:inline-flex;align-items:baseline;gap:.32rem;
-  background:var(--card);border:1px solid var(--rule);border-radius:99px;
-  padding:.24rem .58rem;margin:0;cursor:pointer;
-  font:inherit;font-size:.78rem;color:var(--muted);
-  transition:color var(--fast) linear, border-color var(--fast) linear, background var(--fast) linear, transform var(--fast) var(--ease);
+  display:inline-flex;align-items:baseline;gap:.36rem;
+  background:none;border:0;border-radius:0;
+  padding:.26rem .02rem;margin:0;cursor:pointer;
+  font:inherit;font-size:.8rem;color:var(--muted);
+  border-bottom:2px solid transparent;
+  transition:color var(--fast) linear, border-color var(--fast) linear;
 }
 .filters button:hover{
   color:var(--ink);
-  border-color:var(--edge);
-  background:color-mix(in oklab, var(--card) 60%, var(--hover));
-  transform:translateY(-1px);
+  border-bottom-color:color-mix(in oklab, var(--edge) 62%, transparent);
 }
 .filters button.on{
-  color:var(--ink);font-weight:600;
-  border-color:color-mix(in oklab, var(--ga, var(--accent)) 55%, var(--edge));
-  background:color-mix(in oklab, var(--ga, var(--accent)) 20%, var(--card));
-}
-.filters--views button.on{
   color:var(--ink);
-  border-color:color-mix(in oklab, var(--accent) 55%, var(--edge));
-  background:color-mix(in oklab, var(--accent) 18%, var(--card));
+  border-bottom-color:color-mix(in oklab, var(--ga, var(--accent)) 72%, #fff);
 }
-.filters button.zero{opacity:.4}
-.filters button.zero:hover{opacity:.7}
+.filters--views button{font-style:italic;font-size:.76rem}
+.filters--views button.on{
+  border-bottom-color:color-mix(in oklab, var(--accent) 72%, #fff);
+}
+.filters button.zero{opacity:.35;pointer-events:auto}
+.filters button.zero:hover{opacity:.6}
 .filters .group .dot{
-  width:.44rem;height:.44rem;flex:none;align-self:center;
+  width:.42rem;height:.42rem;flex:none;align-self:center;
   border-radius:99px;
   background:var(--ga, var(--faint));
   opacity:.85;
   transition:opacity var(--fast) linear;
 }
 .filters button.on .dot{opacity:1}
-.filter-count{font-size:.7rem;color:var(--faint);font-family:var(--serif)}
+.filter-count{font-size:.7rem;color:var(--faint);font-family:var(--serif);font-style:italic}
 .filters button.on .filter-count{color:var(--muted)}
 .filters--groups{
   padding-bottom:.1rem;
@@ -425,41 +417,41 @@ header::after{
   .filters--groups li{flex:none}
 }
 @media (max-width:899px){
-  .filters button{padding:.2rem .46rem;font-size:.74rem}
+  .filters button{padding:.2rem .02rem;font-size:.74rem}
   .filter-count{font-size:.66rem}
 }
 .filters .group .lbl-s{display:none}
-/* tablet-window band: shorter labels, tighter chips */
+/* tablet-window band: shorter labels, tighter tabs */
 @media (min-width:640px) and (max-width:1079px){
-  .filters button{padding:.16rem .4rem;font-size:.7rem}
-  .filters{gap:.26rem}
+  .filters button{padding:.14rem .02rem;font-size:.7rem}
+  .filters{gap:.22rem .42rem}
   .filter-count{font-size:.62rem}
-  .filters .group .dot{width:.34rem;height:.34rem}
+  .filters .group .dot{width:.32rem;height:.32rem}
   .filters .group .lbl{display:none}
   .filters .group .lbl-s{display:inline}
 }
 @media (max-width:560px){
   .count{display:none}
 }
-.filters--views{padding-top:.12rem;border-top:1px solid var(--rule)}
+.filters--views{padding-top:.1rem;border-top:1px solid var(--rule)}
 @media (min-width:1080px){
-  .filter-bar{flex-direction:row;flex-wrap:wrap;align-items:center;gap:.4rem .9rem}
+  .filter-bar{flex-direction:row;flex-wrap:wrap;align-items:center;gap:.4rem 1.1rem}
   .filters--groups{flex-wrap:wrap;overflow:visible}
   .filters--views{border-top:0;padding-top:0}
   .filters--views::before{
-    content:"";width:1px;height:1.1rem;background:var(--rule);
+    content:"";width:1px;height:1.05rem;background:var(--rule);
     margin-right:.5rem;align-self:center;
   }
 }
 .filters .shuffle{
   font-style:italic;color:var(--faint);
-  padding:.22rem .6rem;border-color:transparent;background:none;
+  padding:.26rem .02rem;border:0;background:none;
 }
 .filters .shuffle::after{
   content:"\21bb";margin-left:.14rem;font-style:normal;
   color:var(--accent);opacity:.8;
 }
-.filters .shuffle:hover{color:var(--ink);border-color:var(--edge);background:none;transform:rotate(-14deg)}
+.filters .shuffle:hover{color:var(--ink);border-bottom-color:transparent;background:none;transform:rotate(-14deg)}
 .filters .shuffle:disabled{opacity:.4;cursor:default;color:var(--faint)}
 .filters .shuffle:disabled:hover{color:var(--faint);transform:none;background:none}
 
@@ -469,16 +461,11 @@ header::after{
 .sect-head{display:flex;align-items:baseline;gap:.55rem;margin:0 0 .75rem}
 .sect-head h2{
   margin:0;font-family:var(--head);
-  font-size:1.02rem;font-weight:700;letter-spacing:.005em;
+  font-size:1.1rem;font-weight:700;letter-spacing:.012em;
   color:var(--ink);
-  display:inline-flex;align-items:center;gap:.45rem;
+  display:inline-flex;align-items:baseline;gap:.45rem;
   padding-bottom:.3rem;
   border-bottom:2px solid color-mix(in oklab, var(--ga, var(--accent)) 78%, transparent);
-}
-.sect-head h2::before{
-  content:"";width:.44rem;height:.44rem;flex:none;
-  transform:rotate(45deg);
-  background:color-mix(in oklab, var(--ga, var(--accent)) 85%, #fff);
 }
 .sect-head .n{
   font-family:var(--serif);font-style:italic;
@@ -733,8 +720,6 @@ html[data-theme="day"] .card.plate{
 /* light themes: weave group accents toward ink so light ramp colours still read on paper */
 html[data-theme="day"] .sect-head h2,
 html[data-theme="matcha"] .sect-head h2{border-bottom-color:color-mix(in oklab, var(--ga) 60%, var(--ink))}
-html[data-theme="day"] .sect-head h2::before,
-html[data-theme="matcha"] .sect-head h2::before{background:color-mix(in oklab, var(--ga) 58%, var(--ink))}
 html[data-theme="day"] .sect-head .rule,
 html[data-theme="matcha"] .sect-head .rule{background:linear-gradient(90deg, color-mix(in oklab, var(--ga) 42%, var(--ink)) 0, var(--rule) 46%, transparent)}
 html[data-theme="day"] .sect-head .n,
@@ -752,15 +737,42 @@ html[data-theme="day"] .filters .group .dot,
 html[data-theme="matcha"] .filters .group .dot{background:color-mix(in oklab, var(--ga) 52%, var(--ink))}
 html[data-theme="day"] .filters button.on,
 html[data-theme="matcha"] .filters button.on{
-  border-color:color-mix(in oklab, var(--ga, var(--accent)) 52%, var(--ink));
-  background:color-mix(in oklab, var(--ga, var(--accent)) 18%, var(--card));
+  border-bottom-color:color-mix(in oklab, var(--ga, var(--accent)) 65%, var(--ink));
 }
 html[data-theme="day"] .recent-list a::before,
 html[data-theme="matcha"] .recent-list a::before{background:color-mix(in oklab, var(--ga) 55%, var(--ink))}
 html[data-theme="day"] .recent-list a:hover,
-html[data-theme="matcha"] .recent-list a:hover{border-color:color-mix(in oklab, var(--ga, var(--accent)) 55%, var(--ink))}
+html[data-theme="matcha"] .recent-list a:hover{border-bottom-color:color-mix(in oklab, var(--ga, var(--accent)) 60%, var(--ink))}
 
-main.wrap{padding-bottom:clamp(30px, 3.2rem, 60px)}
+main.wrap{padding-bottom:clamp(26px, 2.8rem, 52px)}
+
+/* ------------------------------------------------- colophon */
+
+.foot{
+  margin-top:clamp(6px, .8rem, 14px);
+  padding-bottom:clamp(30px, 3.6rem, 68px);
+}
+.foot-rule{
+  height:5px;
+  border-top:1px solid var(--edge);
+  border-bottom:1px solid color-mix(in oklab, var(--edge) 45%, transparent);
+  margin-bottom:.9rem;
+}
+.foot-in{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:.3rem 1.2rem;
+}
+.foot-brand{
+  font-family:var(--head);font-weight:700;font-size:.86rem;
+}
+.foot-brand i{font-style:normal;color:var(--accent)}
+.foot-line{
+  font-family:var(--serif);font-style:italic;
+  font-size:.76rem;color:var(--faint);
+}
+.foot-note{margin-left:auto;font-family:var(--serif);font-style:italic;font-size:.76rem;color:var(--faint);white-space:nowrap}
+@media (max-width:560px){
+  .foot-note{margin-left:0}
+}
 
 /* ------------------------------------------- game overlay */
 
@@ -776,17 +788,16 @@ main.wrap{padding-bottom:clamp(30px, 3.2rem, 60px)}
 }
 .ov-bar{
   display:flex;align-items:center;gap:.55rem;
-  padding:.5rem .8rem;
-  border-bottom:2px solid color-mix(in oklab, var(--accent) 72%, transparent);
-  background:
-    linear-gradient(180deg, color-mix(in oklab, var(--accent) 7%, var(--card)), var(--card) 70%);
+  padding:.55rem .8rem;
+  border-bottom:1px solid var(--edge);
+  background:color-mix(in oklab, var(--card) 45%, var(--stage));
   color:var(--ink);
   font-size:.8rem;
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
   transform:translateY(-.45rem);
   transition:transform .16s var(--ease);
-  box-shadow:0 6px 18px rgba(0,0,0,.4);
+  box-shadow:none;
 }
 #overlay.open .ov-bar{transform:none}
 .ov-title{
@@ -809,18 +820,18 @@ main.wrap{padding-bottom:clamp(30px, 3.2rem, 60px)}
 .ov-note[hidden]{display:none}
 .ov-bar a,.ov-bar button{
   background:none;
-  border:1px solid var(--rule);border-radius:99px;
-  padding:.22rem .72rem;cursor:pointer;font:inherit;font-size:.78rem;
+  border:0;border-bottom:1px solid transparent;border-radius:0;
+  padding:.22rem .04rem;cursor:pointer;font:inherit;font-size:.78rem;
   color:var(--muted);text-decoration:none;white-space:nowrap;
   transition:color var(--fast) linear, border-color var(--fast) linear;
 }
 .ov-bar a:hover,.ov-bar button:hover{
-  color:var(--accent);
-  border-color:color-mix(in oklab, var(--accent) 45%, var(--rule));
+  color:var(--ink);
+  border-bottom-color:color-mix(in oklab, var(--edge) 70%, transparent);
 }
 .ov-bar button.done{
-  color:var(--ink);
-  border-color:color-mix(in oklab, var(--accent) 55%, var(--rule));
+  color:var(--accent);
+  border-bottom-color:color-mix(in oklab, var(--accent) 60%, transparent);
 }
 #frame{
   flex:1;width:100%;border:0;background:#000;
@@ -850,9 +861,6 @@ body.locked{overflow:hidden}
 html.theming body,html.theming body *{
   transition:background-color .22s linear,border-color .22s linear,color .22s linear !important;
 }
-html.theming .themes button{
-  transition:opacity var(--fast) linear, background-color .22s linear !important;
-}
 html.theming #overlay,html.theming #overlay *{transition:none !important}
 
 @media (prefers-reduced-motion: reduce){
@@ -867,23 +875,16 @@ html.theming #overlay,html.theming #overlay *{transition:none !important}
 
 .log-btn{
   position:relative;
-  background:none;border:1px solid transparent;border-radius:99px;
-  padding:.2rem .62rem;margin:0;cursor:pointer;
-  font:inherit;font-style:italic;font-size:.78rem;
-  color:var(--faint);white-space:nowrap;
+  background:none;border:0;border-bottom:1px solid transparent;border-radius:0;
+  padding:.2rem .3rem;margin:0;cursor:pointer;
+  font:inherit;font-style:italic;font-size:.8rem;
+  color:var(--muted);white-space:nowrap;
   transition:color var(--fast) linear, border-color var(--fast) linear;
 }
-.log-btn::before{
-  content:"";display:inline-block;
-  width:.34rem;height:.34rem;border-radius:99px;
-  background:var(--accent);margin-right:.4rem;
-  vertical-align:.04em;
-}
-.log-btn:hover{color:var(--ink);border-color:var(--rule)}
+.log-btn:hover{color:var(--ink)}
 .log-btn[aria-expanded="true"]{
   color:var(--ink);
-  border-color:color-mix(in oklab, var(--accent) 45%, var(--rule));
-  background:color-mix(in oklab, var(--accent) 12%, var(--card));
+  border-bottom:1px solid color-mix(in oklab, var(--accent) 55%, transparent);
 }
 .log-btn[hidden]{display:none}
 
@@ -929,13 +930,13 @@ html.theming #overlay,html.theming #overlay *{transition:none !important}
 }
 .log-head button{
   margin-left:auto;
-  background:none;border:1px solid var(--rule);border-radius:99px;
-  padding:.14rem .6rem;cursor:pointer;
+  background:none;border:1px solid transparent;border-radius:0;
+  padding:.14rem .3rem;cursor:pointer;
   font:inherit;font-style:italic;font-size:.76rem;
   color:var(--faint);white-space:nowrap;
   transition:color var(--fast) linear, border-color var(--fast) linear;
 }
-.log-head button:hover{color:var(--ink);border-color:var(--edge)}
+.log-head button:hover{color:var(--ink)}
 
 .log-list{margin:0;padding:0;list-style:none}
 .log-list li{
@@ -949,10 +950,10 @@ html.theming #overlay,html.theming #overlay *{transition:none !important}
 .log-list li:first-child{border-top:0}
 .log-list li::before{
   content:"";position:absolute;left:0;top:1.18em;
-  width:.34rem;height:.34rem;border-radius:99px;
+  width:.32rem;height:.32rem;border-radius:99px;
   background:var(--edge);
 }
-.log-list li:first-child::before{background:var(--accent);box-shadow:0 0 6px color-mix(in oklab, var(--accent) 55%, transparent)}
+.log-list li:first-child::before{background:var(--accent)}
 .log-list li:first-child span{color:var(--ink)}
 .log-list time{
   font-family:var(--serif);font-style:italic;
@@ -1019,6 +1020,15 @@ html.theming #overlay,html.theming #overlay *{transition:none !important}
   <div class="empty" id="empty">Nothing matches that.</div>
 </main>
 
+<footer class="wrap foot">
+  <div class="foot-rule" aria-hidden="true"></div>
+  <div class="foot-in">
+    <span class="foot-brand">Backpage<i>.</i></span>
+    <span class="foot-line">a hand-kept index of browser games, sorted by shelf and refreshed from the vault</span>
+    <span class="foot-note">night shift, dusk, abyss, matcha, daylight</span>
+  </div>
+</footer>
+
 <div id="overlay">
   <div class="ov-bar">
     <div class="ov-title" id="ovTitle"><span id="ovName"></span><span class="ov-note" id="ovNote" hidden>loading</span></div>
@@ -1071,6 +1081,7 @@ const ovCopy = $('ovCopy'), ovFull = $('ovFull');
 const RECENT_KEY = 'backpage:recent';
 
 const CHANGES = [
+  {d:'8 nov 2026', t:'design pass: header, search, filters, recently-played and player bar rebuilt as quiet print-style controls, lighter page ground, and a proper colophon at the end of the shelf'},
   {d:'7 nov 2026', t:'rebalanced every theme: dark tiles keep readable titles, daylight and matcha show bright artwork without a tile overlay, and light-theme title alignment and colouring were cleaned up'},
   {d:'6 nov 2026', t:'two more colour genres: abyss (deep sea) and matcha (green tea), joining night shift, dusk and daylight'},
   {d:'6 nov 2026', t:'categories sorted by how many games they hold; group dots now run red to violet to off-white'},
