@@ -1701,6 +1701,13 @@ html.theming #overlay,html.theming #overlay *{transition:none !important}
   </div>
 </footer>
 
+<div id="preloader" hidden>
+  <div class="preloader-in">
+    <p class="preloader-brand">Backpage<i>.</i></p>
+    <p class="preloader-note">lifting the shelf</p>
+  </div>
+</div>
+
 <div id="overlay">
   <div class="ov-bar">
     <div class="ov-title" id="ovTitle"><span id="ovName"></span><span class="ov-note" id="ovNote" hidden>loading</span></div>
@@ -1786,6 +1793,67 @@ function primeArt() {
     else artIO.observe(c);
   }
 }
+
+// the artwork of every game in the catalogue is fetched here, behind the lift,
+// so a deep scroll lands on warm tiles instead of bare ones and the shelf does
+// not have to wait on a card-by-card observer to decide who is near first.
+let preloading = false;
+let preHideTimer = null;
+
+function hidePreload() {
+  const el = $('preloader');
+  if (!el) return;
+  el.classList.add('done');
+  clearTimeout(preHideTimer);
+  preHideTimer = setTimeout(function() { el.setAttribute('hidden', ''); }, 600);
+}
+
+function startPreload() {
+  const el = $('preloader');
+  if (!el) return;
+  el.classList.remove('done');
+  el.removeAttribute('hidden');
+
+  if (preloading) return;
+  preloading = true;
+
+  const keys = [];
+  const seen = new Set();
+  GAMES.forEach(function(x) {
+    if (x.i && !seen.has(x.i)) { seen.add(x.i); keys.push(x.i); }
+  });
+
+  if (!keys.length) { hidePreload(); return; }
+
+  let left = keys.length;
+  keys.forEach(function(k) {
+    const img = new Image();
+    img.onload = function() { if (--left <= 0) hidePreload(); };
+    img.onerror = function() { if (--left <= 0) hidePreload(); };
+    img.src = 'images/cards/' + k + '.jpg';
+  });
+}
+
+// the observer is the fast path, not the only one. a scroll can land a card on
+// screen before its callback runs, and a restored scroll position can skip the
+// first frame entirely, so anything already near the viewport is switched on
+// here as well. this is what keeps a fast flick through the shelf from leaving
+// a screen of bare tiles behind.
+let artSoon = 0;
+function primeArtSoon() {
+  if (artSoon) return;
+  artSoon = setTimeout(function() {
+    artSoon = 0;
+    primeArt();
+  }, 80);
+}
+window.addEventListener('scroll', primeArtSoon, { passive: true });
+window.addEventListener('resize', primeArtSoon);
+window.addEventListener('load', function() {
+  primeArt();
+  startPreload();
+  setTimeout(primeArt, 260);
+});
 
 const $ = id => document.getElementById(id);
 const listEl = $('sections'), emptyEl = $('empty'), countEl = $('count'), filterEl = $('filters');
@@ -2301,7 +2369,9 @@ function render() {
       const a = document.createElement('a');
       const art = !!x.i;
       a.className = 'card' + (x.d ? ' dl' : '') + (art ? '' : ' plate');
-      a.href = x.u;
+      // every card points at this shelf, not at the host it was imported
+      // from: hover, middle click and "new tab" all stay on our own address.
+      a.href = x.d ? x.u : '#play=' + encodeURIComponent(x.n);
       a.style.setProperty('--chars', Math.min(46, x.n.length));
 
       let inner = '';
@@ -2525,7 +2595,7 @@ function openGame(x) {
   clearTimeout(fadeTimer);
   ovName.textContent = x.n;
   ovNote.hidden = false;
-  ovNew.href = x.u;
+  ovNew.href = '#play=' + encodeURIComponent(x.n);
   frame.classList.remove('ready');
   frame.src = x.u;
   overlay.classList.add('open');
