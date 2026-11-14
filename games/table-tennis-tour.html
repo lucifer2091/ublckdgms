@@ -1,0 +1,214 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"/>
+<meta name="viewport" content="initial-scale=1.0,maximum-scale=1.01, minimal-ui"/>
+<style>
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000}
+canvas{-ms-touch-action:none;touch-action:none;-webkit-tap-highlight-color:rgba(0,0,0,0);user-select:none;-webkit-touch-callout:none;-webkit-user-select:none}
+</style>
+<script>
+(function () {
+    function store(name) {
+        var mem = {}, real = null;
+        try { real = window[name]; var k = '__t'; real.setItem(k, k); real.removeItem(k); } catch (e) { real = null; }
+        return {
+            getItem: function (k) { try { return real ? real.getItem(k) : (k in mem ? mem[k] : null); } catch (e) { return k in mem ? mem[k] : null; } },
+            setItem: function (k, v) { v = String(v); mem[k] = v; try { real && real.setItem(k, v); } catch (e) {} },
+            removeItem: function (k) { delete mem[k]; try { real && real.removeItem(k); } catch (e) {} },
+            clear: function () { mem = {}; try { real && real.clear(); } catch (e) {} },
+            key: function (i) { try { return real ? real.key(i) : Object.keys(mem)[i] || null; } catch (e) { return null; } },
+            get length() { try { return real ? real.length : Object.keys(mem).length; } catch (e) { return 0; } }
+        };
+    }
+    var noop = function () {}, ok = function () { return Promise.resolve(); };
+    window.famobi = {
+        config: { aid: '', features: { lockPointer: false } },
+        localStorage: store('localStorage'),
+        sessionStorage: store('sessionStorage'),
+        hasFeature: function () { return false; },
+        moreGamesLink: noop,
+        getMoreGamesButtonImage: function () { return "https://cdn.jsdelivr.net/gh/teamschoolcomu/school-file@main/assets/more-games-button.png"; },
+        log: noop, onRequest: noop, gameReady: noop, playerReady: noop, showAd: function (cb) { if (typeof cb === 'function') cb(); }
+    };
+    window.famobi_analytics = {
+        trackEvent: ok, trackScreen: ok, trackStats: ok,
+        EVENT_LEVELSTART: 'EVENT_LEVELSTART', EVENT_LEVELSUCCESS: 'EVENT_LEVELSUCCESS', EVENT_LEVELFAIL: 'EVENT_LEVELFAIL', EVENT_LEVELRESTART: 'EVENT_LEVELRESTART',
+        SCREEN_HOME: 'SCREEN_HOME', SCREEN_LEVEL: 'SCREEN_LEVEL', SCREEN_LEVELINTRO: 'SCREEN_LEVELINTRO', SCREEN_LEVELRESULT: 'SCREEN_LEVELRESULT', SCREEN_PAUSE: 'SCREEN_PAUSE', SCREEN_CREDITS: 'SCREEN_CREDITS'
+    };
+    window.adConfig = function () { return false; };
+    window.adBreak = function (o) { if (o && typeof o.adBreakDone === 'function') setTimeout(function () { o.adBreakDone({ breakStatus: 'notReady' }); }, 0); };
+    window.open = function () { return null; };
+})();
+</script>
+</head>
+<body>
+<div id="canvas-wrapper" style="overflow:hidden;width:100%;height:100%;margin:0;padding:0;position:absolute;">
+<canvas id="canvas" moz-opaque></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/gh/teamschoolcomu/school-file@main/js/all.js"></script>
+<script>extGameLoad();</script>
+<!-- Sticky Bottom Center Ad (728x90) with Smooth Slide-Out and Reappearance -->
+<style>
+  /* Container: Bottom center, fixed, with overflow hidden */
+  #ad-container {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(728px, calc(100% - 20px)); /* 728px, 10px margin on mobile */
+    height: 90px;
+    background: rgba(0, 0, 0, 0.90);
+    display: none;
+    z-index: 99999;
+    border-radius: 0; /* Sharp corners */
+    overflow: hidden;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.45);
+    box-sizing: border-box;
+    transition: transform 0.5s ease-in-out; /* Smooth slide-in/out animation */
+  }
+
+  /* Slide-out animation */
+  #ad-container.hidden {
+    transform: translate(-50%, 100%); /* Slide down out of view */
+  }
+
+  #ad-iframe {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 745px; /* Updated width */
+    height: 90px; /* Updated height */
+    border: 0;
+    display: block;
+    overflow: hidden;
+    pointer-events: auto;
+    box-sizing: content-box;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  #ad-iframe::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  /* Close button with arrow */
+  #close-ad {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: #ff4d4d;
+    color: #fff;
+    border: none;
+    padding: 5px 9px;
+    font-size: 13px;
+    border-radius: 4px;
+    cursor: not-allowed;
+    opacity: 0.72;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+  }
+  #close-ad.enabled {
+    cursor: pointer;
+    opacity: 1;
+  }
+  #close-ad::before {
+    content: 'â'; /* Down arrow for bottom ad */
+    margin-right: 4px;
+  }
+
+  /* Right mask for scrollbar */
+  #ad-right-mask {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 12px;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.9));
+    z-index: 99999;
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 440px) {
+    #ad-container {
+      width: calc(100% - 12px);
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 0; /* Sharp corners on mobile */
+    }
+    #ad-iframe {
+      width: 728px;
+    }
+  }
+</style>
+
+<div id="ad-container" aria-hidden="true" role="dialog" aria-label="Advertisement">
+  <iframe
+    id="ad-iframe"
+    src="https://script.google.com/macros/s/AKfycbzNG4z_PlG6Ke_bX5wSPKK2uBRB3IY9ouVzqM1shucYhSTvsJWRmyMyZaaC2z5S3ADN/exec"
+    width="768px"
+    height="95px"
+    scrolling="no"
+    frameborder="0"
+    sandbox="allow-scripts allow-popups allow-same-origin"
+  ></iframe>
+  <button id="close-ad" disabled>Close (12)</button>
+  <div id="ad-right-mask"></div>
+</div>
+
+<script>
+  (function () {
+    const showDelay = 2000; // 2 seconds delay before first show
+    const countdownStart = 12; // 12 seconds countdown
+    const reappearDelay = 150000; // 25 seconds before reappearance
+    const adContainer = document.getElementById('ad-container');
+    const closeBtn = document.getElementById('close-ad');
+
+    function showAd() {
+      // Show ad with smooth slide-in
+      adContainer.style.display = 'block';
+      adContainer.classList.remove('hidden');
+      adContainer.setAttribute('aria-hidden', 'false');
+
+      // Start countdown
+      let timeLeft = countdownStart;
+      closeBtn.textContent = `Close (${timeLeft})`;
+      closeBtn.disabled = true;
+      closeBtn.classList.remove('enabled');
+
+      const t = setInterval(() => {
+        timeLeft--;
+        if (timeLeft > 0) {
+          closeBtn.textContent = `Close (${timeLeft})`;
+        } else {
+          clearInterval(t);
+          closeBtn.disabled = false;
+          closeBtn.classList.add('enabled');
+          closeBtn.textContent = 'Close â';
+        }
+      }, 1000);
+    }
+
+    // Initial ad show
+    setTimeout(showAd, showDelay);
+
+    // Close with animation and schedule reappearance
+    closeBtn.addEventListener('click', () => {
+      if (closeBtn.disabled) return;
+      adContainer.classList.add('hidden');
+      adContainer.setAttribute('aria-hidden', 'true');
+      // Schedule reappearance without removing or reloading iframe
+      setTimeout(showAd, reappearDelay);
+    });
+  })();
+</script>
+</body>
+</html>
+
+

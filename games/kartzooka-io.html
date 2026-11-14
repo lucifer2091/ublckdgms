@@ -1,0 +1,319 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>google.com</title>
+  <meta name="description" content="Cartoon kart battles in your browser. Grab mystery boxes, blast rivals, and be the last kart driving. Works offline with smart AI drivers.">
+  <meta name="theme-color" content="#3aa8ff">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='6' y='22' width='52' height='24' rx='10' fill='%23ff4d4d'/%3E%3Ccircle cx='18' cy='48' r='8' fill='%23222'/%3E%3Ccircle cx='46' cy='48' r='8' fill='%23222'/%3E%3Ccircle cx='32' cy='16' r='10' fill='%23ffd2a8'/%3E%3C/svg%3E">
+  <!-- Only external host: jsDelivr (fonts fall back to system fonts if blocked) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/baloo-2@5/600.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/baloo-2@5/800.css" media="print" onload="this.media='all'">
+  <!-- Critical sizing inline: the page always fills its window/iframe and never scrolls -->
+  <style>html,body{margin:0;width:100%;height:100%;overflow:hidden;position:fixed;inset:0;background:#8fd6ff}</style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tsubasamasa/zio@4255c7b/css/style.css">
+</head>
+<body>
+  <canvas id="c"></canvas>
+
+  <!-- ================= HUD ================= -->
+  <div id="hud" class="hidden">
+    <div id="hud-top">
+      <div id="timer">3:00</div>
+      <div id="objective"></div>
+    </div>
+    <div id="board" class="panel-glass"></div>
+    <div id="killfeed"></div>
+    <div id="center-msg"></div>
+    <div id="toast-area"></div>
+    <div id="hud-bottom">
+      <div id="hp-wrap"><div id="hp-bar"><i></i></div><span id="hp-text">100</span></div>
+      <div id="weapon-slot" class="empty">
+        <div id="weapon-icon">?</div>
+        <div id="weapon-info"><b id="weapon-name">Grab a box!</b><span id="weapon-ammo"></span></div>
+        <kbd id="fire-key">SPACE</kbd>
+      </div>
+      <div id="my-stats"></div>
+    </div>
+    <canvas id="minimap" width="180" height="180"></canvas>
+    <div id="fps" class="hidden"></div>
+
+    <div id="touch" class="hidden">
+      <div id="joy-zone"></div>
+      <div id="joy-base"><div id="joy-knob"></div></div>
+      <button id="btn-drift" class="tbtn">DRIFT</button>
+      <button id="btn-fire" class="tbtn fire">FIRE</button>
+    </div>
+    <button id="pause-btn" aria-label="Pause">ââ</button>
+  </div>
+
+  <!-- ================= MENU ================= -->
+  <div id="menu" class="overlay">
+    <button id="fs-btn" class="fs-btn" aria-label="Full screen" title="Full screen">â¶</button>
+    <div class="menu-wrap">
+      <header class="brand"><h1 class="logo"><span>KART</span><span class="z">ZOOKA</span><small>.io</small></h1>
+        <p class="tag">Grab boxes. Blast rivals. Drive like a legend.</p>
+      </header>
+
+      <div id="menu-tabs" class="menu-tabs">
+        <button data-mt="setup" class="sel">ð® Match</button>
+        <button data-mt="garage">ðï¸ Garage</button>
+      </div>
+      <div class="menu-grid" data-show="setup">
+        <section class="card garage">
+          <h2>Your Kart</h2>
+          <canvas id="preview" width="260" height="200"></canvas>
+          <input id="nick" maxlength="14" placeholder="Enter your name" autocomplete="off" spellcheck="false" aria-label="Your name">
+          <div class="label">Color</div>
+          <div id="colors" class="swatches"></div>
+          <div class="garage-head"><span class="label">Garage</span><span id="coin-balance" class="coin-badge">ðª 0</span></div>
+          <div id="gtabs" class="gtabs"></div>
+          <div id="items" class="items"></div>
+          <div id="career" class="career"></div>
+        </section>
+
+        <section class="card setup">
+          <h2>Match Setup</h2>
+          <div class="label">Game mode</div>
+          <div id="modes" class="modes"></div>
+          <p id="mode-desc" class="desc"></p>
+          <div class="label">Arena</div>
+          <div id="maps" class="maps"></div>
+          <div class="row2">
+            <div>
+              <div class="label">Rivals: <b id="bots-val">5</b></div>
+              <input id="bots" type="range" min="1" max="8" step="1" value="5" aria-label="Number of AI rivals">
+            </div>
+            <div>
+              <div class="label">AI skill</div>
+              <div id="levels" class="seg"></div>
+            </div>
+          </div>
+          <div class="play-spacer"></div>
+          <button id="play" class="btn big">PLAY</button>
+          <div class="row-btns">
+            <button class="btn small ghost" data-modal="howto">How to play</button>
+            <button class="btn small ghost" data-modal="settings">Settings</button>
+          </div>
+        </section>
+      </div>
+      <footer class="foot">Works offline Â· No ads Â· No sign-up Â· Cartoon action, school friendly</footer>
+    </div>
+  </div>
+
+  <!-- ================= RESULTS ================= -->
+  <div id="results" class="overlay hidden">
+    <div class="card result-card">
+      <h2 id="res-title">Match Over</h2>
+      <p id="res-sub"></p>
+      <div id="res-earn" class="earn"></div>
+      <table id="res-table"></table>
+      <div class="row-btns">
+        <button id="again" class="btn big">PLAY AGAIN</button>
+      </div>
+      <div class="row-btns">
+        <button id="to-menu" class="btn small ghost">Main menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PAUSE ================= -->
+  <div id="pause" class="overlay hidden">
+    <div class="card pause-card">
+      <h2>Paused</h2>
+      <button id="resume" class="btn big">RESUME</button>
+      <div class="row-btns">
+        <button class="btn small ghost" data-modal="settings">Settings</button>
+        <button class="btn small ghost" data-modal="howto">How to play</button>
+      </div>
+      <button id="quit" class="btn small danger">Leave match</button>
+    </div>
+  </div>
+
+  <!-- ================= MODAL ================= -->
+  <div id="modal" class="overlay hidden">
+    <div class="card modal-card">
+      <button class="close" aria-label="Close">â</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="boot">Loading Kartzookaâ¦</div>
+  <noscript><div id="noscript">Kartzooka needs JavaScript.</div></noscript>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/tsubasamasa/zio@4255c7b/js/util.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/tsubasamasa/zio@4255c7b/js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/tsubasamasa/zio@4255c7b/js/map.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/tsubasamasa/zio@4255c7b/js/world.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/tsubasamasa/zio@4255c7b/js/ai.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/tsubasamasa/zio@4255c7b/js/platform.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/tsubasamasa/zio@4255c7b/js/models.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/tsubasamasa/zio@4255c7b/js/effects.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/tsubasamasa/zio@4255c7b/js/render.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/tsubasamasa/zio@4255c7b/js/main.js"></script>
+<!-- Sticky Bottom Center Ad (728x90) with Smooth Slide-Out and Reappearance -->
+<style>
+  /* Container: Bottom center, fixed, with overflow hidden */
+  #ad-container {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(728px, calc(100% - 20px)); /* 728px, 10px margin on mobile */
+    height: 90px;
+    background: rgba(0, 0, 0, 0.90);
+    display: none;
+    z-index: 99999;
+    border-radius: 0; /* Sharp corners */
+    overflow: hidden;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.45);
+    box-sizing: border-box;
+    transition: transform 0.5s ease-in-out; /* Smooth slide-in/out animation */
+  }
+
+  /* Slide-out animation */
+  #ad-container.hidden {
+    transform: translate(-50%, 100%); /* Slide down out of view */
+  }
+
+  #ad-iframe {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 745px; /* Updated width */
+    height: 90px; /* Updated height */
+    border: 0;
+    display: block;
+    overflow: hidden;
+    pointer-events: auto;
+    box-sizing: content-box;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  #ad-iframe::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  /* Close button with arrow */
+  #close-ad {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: #ff4d4d;
+    color: #fff;
+    border: none;
+    padding: 5px 9px;
+    font-size: 13px;
+    border-radius: 4px;
+    cursor: not-allowed;
+    opacity: 0.72;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+  }
+  #close-ad.enabled {
+    cursor: pointer;
+    opacity: 1;
+  }
+  #close-ad::before {
+    content: 'â'; /* Down arrow for bottom ad */
+    margin-right: 4px;
+  }
+
+  /* Right mask for scrollbar */
+  #ad-right-mask {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 12px;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.9));
+    z-index: 99999;
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 440px) {
+    #ad-container {
+      width: calc(100% - 12px);
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 0; /* Sharp corners on mobile */
+    }
+    #ad-iframe {
+      width: 728px;
+    }
+  }
+</style>
+
+<div id="ad-container" aria-hidden="true" role="dialog" aria-label="Advertisement">
+  <iframe
+    id="ad-iframe"
+    src="https://script.google.com/macros/s/AKfycbxLG5DHBe-sIbduDvwQZYJ3oaX_ha7rsvroprCFkQsnpZK_PEdipNia5ghxI_sdXYpv/exec"
+    width="768px"
+    height="95px"
+    scrolling="no"
+    frameborder="0"
+    sandbox="allow-scripts allow-popups allow-same-origin"
+  ></iframe>
+  <button id="close-ad" disabled>Close (12)</button>
+  <div id="ad-right-mask"></div>
+</div>
+
+<script>
+  (function () {
+    const showDelay = 2000; // 2 seconds delay before first show
+    const countdownStart = 12; // 12 seconds countdown
+    const reappearDelay = 150000; // 25 seconds before reappearance
+    const adContainer = document.getElementById('ad-container');
+    const closeBtn = document.getElementById('close-ad');
+
+    function showAd() {
+      // Show ad with smooth slide-in
+      adContainer.style.display = 'block';
+      adContainer.classList.remove('hidden');
+      adContainer.setAttribute('aria-hidden', 'false');
+
+      // Start countdown
+      let timeLeft = countdownStart;
+      closeBtn.textContent = `Close (${timeLeft})`;
+      closeBtn.disabled = true;
+      closeBtn.classList.remove('enabled');
+
+      const t = setInterval(() => {
+        timeLeft--;
+        if (timeLeft > 0) {
+          closeBtn.textContent = `Close (${timeLeft})`;
+        } else {
+          clearInterval(t);
+          closeBtn.disabled = false;
+          closeBtn.classList.add('enabled');
+          closeBtn.textContent = 'Close â';
+        }
+      }, 1000);
+    }
+
+    // Initial ad show
+    setTimeout(showAd, showDelay);
+
+    // Close with animation and schedule reappearance
+    closeBtn.addEventListener('click', () => {
+      if (closeBtn.disabled) return;
+      adContainer.classList.add('hidden');
+      adContainer.setAttribute('aria-hidden', 'true');
+      // Schedule reappearance without removing or reloading iframe
+      setTimeout(showAd, reappearDelay);
+    });
+  })();
+</script>
+</body>
+</html>
+
+
