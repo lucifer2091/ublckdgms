@@ -250,10 +250,17 @@ html[data-theme="abyss"] body{
 }
 
 /* section reveal on first view (JS adds .reveal/.in, respects reduced motion) */
-.sect.reveal{opacity:0;transform:translateY(12px)}
+/* a shelf comes up off the floor rather than sliding in flat: a couple of
+   degrees of rake that settles to nothing. shallow enough that the type never
+   blurs on the way in. */
+.sect.reveal{
+  opacity:0;
+  transform:perspective(1700px) rotateX(3.2deg) translateY(14px);
+  transform-origin:top center;
+}
 .sect.reveal.in{
   opacity:1;transform:none;
-  transition:opacity .36s var(--ease), transform .36s var(--ease);
+  transition:opacity .4s var(--ease), transform .54s var(--ease);
 }
 
 /* settings panel pop */
@@ -499,6 +506,7 @@ header::after{
 /* ------------------------- hero: game of the day + shuffle (2 : 1) */
 
 .hero{
+  position:relative;
   display:grid;
   grid-template-columns:minmax(0,2fr) minmax(0,1fr);
   gap:clamp(14px, 1.8vw, 26px);
@@ -506,8 +514,26 @@ header::after{
   margin:clamp(18px,1.8rem,30px) 0 0;
 }
 
+/* a slow field of dust hanging behind the masthead. it is drawn on a canvas
+   so the points can sit at different depths; the mask keeps it from reaching
+   the shelf headings below. */
+.hero__depth{
+  position:absolute;
+  left:50%;top:-2.2rem;
+  width:min(100%, 74rem);
+  height:calc(100% + 4.4rem);
+  transform:translateX(-50%);
+  z-index:0;
+  pointer-events:none;
+  opacity:.62;
+  -webkit-mask-image:radial-gradient(118% 104% at 50% 40%, #000 30%, transparent 78%);
+  mask-image:radial-gradient(118% 104% at 50% 40%, #000 30%, transparent 78%);
+}
+.hero > section{position:relative;z-index:1}
+
 .pick{display:flex;min-width:0}
 .pick__link{
+  --rx:0deg;--ry:0deg;--tz:0px;--ty:0px;--gx:50%;--gy:50%;
   display:grid;
   grid-template-columns:clamp(11rem, 44%, 27rem) minmax(0,1fr) auto;
   align-items:center;
@@ -519,7 +545,8 @@ header::after{
   background:color-mix(in oklab, var(--card) 55%, var(--paper));
   text-decoration:none;
   color:inherit;
-  transition:border-color var(--fast) linear, background-color var(--fast) linear;
+  transform:perspective(1200px) rotateX(var(--rx)) rotateY(var(--ry)) translate3d(0, var(--ty), var(--tz));
+  transition:border-color var(--fast) linear, background-color var(--fast) linear, transform 90ms linear;
 }
 .pick__link:hover{
   border-color:color-mix(in oklab, var(--ga, var(--accent)) 52%, var(--edge));
@@ -790,20 +817,40 @@ header::after{
   text-decoration:none;
   overflow:hidden;
   isolation:isolate;
+  /* every tile hangs on a shallow perspective plane. the script only writes
+     these six numbers while the pointer crosses one card, so the grid itself
+     never moves -- just the tile under the cursor. */
+  --rx:0deg;--ry:0deg;--tz:0px;--ty:0px;--gx:50%;--gy:50%;
+  transform:perspective(1050px) rotateX(var(--rx)) rotateY(var(--ry)) translate3d(0, var(--ty), var(--tz));
   transition:box-shadow 180ms var(--ease), transform 180ms var(--ease);
 }
-.card:hover{transform:translateY(-2px)}
+.card:hover{--ty:-2px}
 .card:hover{
   box-shadow:
     0 0 0 1px color-mix(in oklab, var(--ga, var(--accent)) 52%, transparent),
     0 10px 26px -10px color-mix(in oklab, var(--ga, var(--accent)) 42%, transparent),
     0 4px 14px -6px rgba(0,0,0,.45);
 }
-.card:active{transform:translateY(-1px)}
+.card:active{--ty:-1px}
 .card:focus-visible{
   outline:none;border-radius:6px;
   box-shadow:0 0 0 2px color-mix(in oklab, var(--ga, var(--accent)) 86%, var(--ink));
 }
+
+/* while the pointer is inside a tile the lean tracks it, so the easing drops
+   to something that follows instead of lagging; it comes back on the way out */
+.card.leaning{transition:box-shadow 180ms var(--ease), transform 70ms linear}
+/* the same light that tilts the tile leaves a soft highlight where the cursor
+   is. soft-light keeps it off the title in every theme. */
+.card::after{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(42% 70% at var(--gx) var(--gy),
+    rgba(255,255,255,.30) 0%, rgba(255,255,255,.11) 40%, transparent 74%);
+  mix-blend-mode:soft-light;
+  opacity:0;
+  transition:opacity 220ms linear;
+}
+.card.leaning::after{opacity:1}
 
 /* a series card is a button, not a link: it opens the list, not a game */
 .card--series{
@@ -1709,6 +1756,7 @@ html.theming #overlay,html.theming #overlay *{transition:none !important}
 <main class="wrap">
 
   <div class="hero">
+    <canvas class="hero__depth" id="heroDepth" aria-hidden="true"></canvas>
     <section class="pick" id="pick" aria-labelledby="pickKick">
       <a class="pick__link" id="pickLink" href="#">
         <span class="pick__art" id="pickArt" aria-hidden="true"></span>
@@ -1960,6 +2008,8 @@ function collapse(items) {
 }
 
 const CHANGES = [
+  {d:'15 nov 2026', t:'tiles lean: a card turns a few degrees toward the cursor and takes a soft highlight where the light lands, the featured pick leans half as far because it is twice the size, and each shelf comes up off the floor on a shallow rake instead of sliding in flat'},
+  {d:'15 nov 2026', t:'a slow field of dust hangs behind the masthead: points sit at different depths and drift toward the glass, larger and brighter the nearer they are, and the pointer nudges the whole field a few pixels; it is drawn on a canvas that stops once scrolled past and holds a single still frame when motion is reduced'},
   {d:'14 nov 2026', t:'art for the games that had none: the seventeen unblocked titles that could still be matched to a picture off the old site keep that artwork, and the rest are drawn from their shelf colour into a sleeve with the name on it, then cut into banner, tile and square, so the whole catalogue finally stops running on bare wood'},
   {d:'14 nov 2026', t:'the untested shelf is gone: its 305 games are sorted onto the shelves they belong to, so the papas and taco games join cooking, the obbies and death runs join parkour, the pokemons join emulators and the io games join arcade, and nothing waits in a holding pen any more'},
   {d:'14 nov 2026', t:'the games no longer run through google sites: 299 of the 305 blocked titles were lifted out of their wrappers and rebuilt as pages of our own, so a game opens straight from this site, and the six that need a publisher SDK keep their original link rather than opening to a black screen'},
@@ -2036,7 +2086,8 @@ const RELEASES = {
   '2026-11-09': '0.3.0',
   '2026-11-10': '0.3.1',
   '2026-11-12': '1.0.0',
-  '2026-11-14': '1.0.1'
+  '2026-11-14': '1.0.1',
+  '2026-11-15': '1.1.0'
 };
 
 const LATEST = Object.keys(RELEASES).reduce(function(best, k) {
@@ -2882,6 +2933,190 @@ document.querySelectorAll('button[data-shape]').forEach(b => {
 });
 
 syncShape();
+
+/* ---------------------------------------------------------------- depth */
+
+// A tile leans toward the cursor, but only a few degrees and only where there
+// is a real pointer to track. One delegated listener covers all thousand-odd
+// cards; nothing is bound per card, so a re-render costs nothing here.
+(function lean(){
+  if (REDUCED) return;
+  if (!window.matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+
+  const SEL = '.card, .pick__link';
+  let held = null, queued = 0, nx = 0, ny = 0;
+
+  function paint(){
+    queued = 0;
+    if (!held) return;
+    // the featured card is twice the size of a tile, so it leans half as far
+    const soft = held.classList.contains('pick__link') ? 0.5 : 1;
+    held.style.setProperty('--rx', (ny * -3.6 * soft).toFixed(2) + 'deg');
+    held.style.setProperty('--ry', (nx * 4.6 * soft).toFixed(2) + 'deg');
+    held.style.setProperty('--tz', Math.round(soft * 5) + 'px');
+    held.style.setProperty('--gx', (50 + nx * 40).toFixed(1) + '%');
+    held.style.setProperty('--gy', (50 + ny * 40).toFixed(1) + '%');
+  }
+
+  function drop(){
+    if (!held) return;
+    held.classList.remove('leaning');
+    for (const p of ['--rx','--ry','--tz','--gx','--gy']) held.style.removeProperty(p);
+    held = null;
+  }
+
+  addEventListener('pointermove', e => {
+    const el = e.target && e.target.closest ? e.target.closest(SEL) : null;
+    if (!el) { drop(); return; }
+    if (el !== held) { drop(); held = el; el.classList.add('leaning'); }
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height) { drop(); return; }
+    nx = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width) * 2 - 1));
+    ny = Math.max(-1, Math.min(1, ((e.clientY - r.top) / r.height) * 2 - 1));
+    if (!queued) queued = requestAnimationFrame(paint);
+  }, { passive: true });
+
+  addEventListener('pointerdown', drop, { passive: true });
+  addEventListener('scroll', drop, { passive: true });
+})();
+
+// A slow field of dust behind the masthead. Each point sits at a depth and
+// drifts toward the glass; size and alpha come from that depth, so the field
+// reads as air rather than as decoration. The pointer nudges it a few pixels.
+// Meant to be noticed only if you stop and look at it.
+(function dust(){
+  const cv = document.getElementById('heroDepth');
+  if (!cv || !cv.getContext) return;
+  const ctx = cv.getContext('2d');
+  if (!ctx) return;
+
+  const COUNT = 56;
+  let W = 1, H = 1, pts = [], raf = 0, last = 0, on = false, visible = true;
+  let mx = 0, my = 0, tmx = 0, tmy = 0;
+  let tint = [224, 122, 79], warm = [238, 229, 215];
+  let moteTint = null, moteWarm = null;
+
+  function hex2rgb(s){
+    const m = String(s || '').trim().match(/^#([0-9a-f]{6})$/i);
+    if (!m) return null;
+    const n = parseInt(m[1], 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  // one soft dot, drawn once per colour, then stamped at every depth. a hard
+  // arc would read as grit; this reads as a mote of dust catching the light.
+  function mote(col){
+    const S = 64;
+    const c = document.createElement('canvas');
+    c.width = c.height = S;
+    const g = c.getContext('2d');
+    const grd = g.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
+    grd.addColorStop(0, 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',1)');
+    grd.addColorStop(0.42, 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',.42)');
+    grd.addColorStop(1, 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',0)');
+    g.fillStyle = grd;
+    g.fillRect(0, 0, S, S);
+    return c;
+  }
+
+  function readTint(){
+    const cs = getComputedStyle(document.documentElement);
+    tint = hex2rgb(cs.getPropertyValue('--accent')) || tint;
+    warm = hex2rgb(cs.getPropertyValue('--ink')) || warm;
+    moteTint = mote(tint);
+    moteWarm = mote(warm);
+  }
+
+  function size(){
+    const r = cv.getBoundingClientRect();
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = Math.max(1, Math.round(r.width));
+    H = Math.max(1, Math.round(r.height));
+    cv.width = Math.round(W * dpr);
+    cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function seed(){
+    pts = [];
+    for (let i = 0; i < COUNT; i++){
+      pts.push({
+        x: Math.random() * 2 - 1,
+        y: Math.random() * 2 - 1,
+        d: Math.random(),                        // 0 far, 1 near
+        r: 0.6 + Math.random() * 1.7,
+        v: 0.012 + Math.random() * 0.030,
+        a: 0.18 + Math.random() * 0.55
+      });
+    }
+  }
+
+  function frame(now){
+    raf = 0;
+    const dt = Math.min(64, now - (last || now));
+    last = now;
+    mx += (tmx - mx) * 0.06;
+    my += (tmy - my) * 0.06;
+
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < pts.length; i++){
+      const p = pts[i];
+      p.d -= p.v * (dt / 1000);
+      if (p.d < 0.02){ p.d = 1; p.x = Math.random() * 2 - 1; p.y = Math.random() * 2 - 1; }
+
+      const near = 1 - p.d;
+      const k = 0.30 + near * 0.70;
+      const sx = W * 0.5 + p.x * (W * 0.46) * (0.5 + k * 0.6) + mx * (10 + near * 26);
+      const sy = H * 0.5 + p.y * (H * 0.46) * (0.5 + k * 0.6) + my * (8 + near * 20);
+      const rad = p.r * (1.4 + near * 4.6);
+      const al = p.a * (0.16 + near * 0.68);
+      const sprite = (i % 5 === 0) ? moteTint : moteWarm;
+      if (!sprite) continue;
+      ctx.globalAlpha = Math.min(0.85, al);
+      ctx.drawImage(sprite, sx - rad, sy - rad, rad * 2, rad * 2);
+    }
+    ctx.globalAlpha = 1;
+    if (on && visible) raf = requestAnimationFrame(frame);
+  }
+
+  function start(){
+    if (raf || REDUCED) return;
+    on = true;
+    last = 0;
+    raf = requestAnimationFrame(frame);
+  }
+  function stop(){
+    on = false;
+    if (raf){ cancelAnimationFrame(raf); raf = 0; }
+  }
+
+  readTint(); size(); seed();
+
+  if (REDUCED){
+    frame(performance.now());          // one still frame, no loop
+    return;
+  }
+
+  if ('IntersectionObserver' in window){
+    new IntersectionObserver(es => {
+      visible = es[0].isIntersecting;
+      if (visible) start(); else stop();
+    }, { rootMargin: '140px' }).observe(cv);
+  } else {
+    start();
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stop(); else if (visible) start();
+  });
+  addEventListener('resize', () => { size(); }, { passive: true });
+  addEventListener('pointermove', e => {
+    tmx = (e.clientX / Math.max(1, innerWidth)) * 2 - 1;
+    tmy = (e.clientY / Math.max(1, innerHeight)) * 2 - 1;
+  }, { passive: true });
+  new MutationObserver(readTint).observe(document.documentElement,
+    { attributes: true, attributeFilter: ['data-theme'] });
+})();
 
 render();
 openFromHash();
