@@ -12,7 +12,10 @@
   if (t === 'dark') t = 'night';     // old saved value
   var ok = ['night','dusk','abyss','matcha','day','pure'];
   if (ok.indexOf(t) < 0) t = 'night';
-  if (t !== 'night') document.documentElement.setAttribute('data-theme', t);
+  // always write the attribute, night included: the stylesheet keys the night
+  // lamp and the inked visitor slip off html[data-theme="night"], and leaving
+  // the attribute off for the default theme silently drops both
+  document.documentElement.setAttribute('data-theme', t);
   var sh = null;
   try { sh = localStorage.getItem('backpage:shape'); } catch (e) {}
   if (sh === 'tile' || sh === 'square') document.documentElement.setAttribute('data-shape', sh);
