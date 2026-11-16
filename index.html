@@ -2059,7 +2059,7 @@ const SERIES = {
   'ace-attorney': { n: 'Ace Attorney',              cover: 'phoenix-wright',          unit: 'games' },
   'pokemon':      { n: 'Pokemon',                   cover: 'pokemon-emerald',         unit: 'games' },
   'donkey-kong':  { n: 'Donkey Kong',               cover: 'donkey-kong-64',          unit: 'games' },
-  'fnaf':         { n: "Five Nights at Freddy's",   cover: 'fnaf-1',                  unit: 'chapters' },
+  'fnaf':         { n: "Five Nights at Freddy's",   cover: 'fnaf-1',                  unit: 'games' },
   'minecraft':    { n: 'Minecraft',                 cover: 'eaglercraft-1-16-5-wasm', unit: 'builds' },
   'vex':          { n: 'Vex',                       cover: 'vex-7',                   unit: 'games' },
   'papas':        { n: "Papa's",                    cover: 'papas-pizzeria',          unit: 'games' },
@@ -2118,7 +2118,40 @@ const SERIES = {
   'pandemic':           { n: 'Pandemic',               unit: 'games' },
   'endoparasitic':      { n: 'Endoparasitic',          unit: 'games' },
   'zombotron':          { n: 'Zombotron',              unit: 'games' },
-  'five-nights-at-candys': { n: "Five Nights at Candy's", unit: 'games' }
+  'five-nights-at-candys': { n: "Five Nights at Candy's", unit: 'games' },
+
+  'among-us':           { n: 'Among Us',               unit: 'games' },
+  'bad-time-simulator': { n: 'Bad Time Simulator',     unit: 'games' },
+  'basketball-legends': { n: 'Basketball Legends',     unit: 'games' },
+  'basketball-stars':   { n: 'Basketball Stars',       unit: 'games' },
+  'burrito-bison':      { n: 'Burrito Bison',          unit: 'games' },
+  'cheese-chompers':    { n: 'Cheese Chompers',        unit: 'games' },
+  'circloo':            { n: 'circloO',                unit: 'games' },
+  'death-run':          { n: 'Death Run',              unit: 'games' },
+  'doblox':             { n: 'Doblox',                 unit: 'games' },
+  'doom':               { n: 'Doom',                   unit: 'games' },
+  'effing-worms':       { n: 'Effing Worms',           unit: 'games' },
+  'gun-mayham':         { n: 'Gun Mayham',             unit: 'games' },
+  'madalin-stunt-cars': { n: 'Madalin Stunt Cars',     unit: 'games' },
+  'mutilate-a-doll':    { n: 'Mutilate a Doll',        unit: 'games' },
+  'ovo':                { n: 'OvO',                    unit: 'games' },
+  'pac-man':            { n: 'Pac-Man',                unit: 'games' },
+  'paper-io':           { n: 'Paper.io',               unit: 'games' },
+  'picos-school':       { n: "Pico's School",          unit: 'games' },
+  'poly-track':         { n: 'Poly Track',             unit: 'games' },
+  'road-of-the-dead':   { n: 'Road of the Dead',       unit: 'games' },
+  'slendytubbies':      { n: 'Slendytubbies',          unit: 'games' },
+  'snow-rider':         { n: 'Snow Rider',             unit: 'games' },
+  'soccer-bros':        { n: 'Soccer Bros',            unit: 'games' },
+  'stick-archers-battle': { n: 'Stick Archers Battle', unit: 'games' },
+  'the-impossible-quiz': { n: 'The Impossible Quiz',   unit: 'games' },
+  'ultrakill':          { n: 'ULTRAKILL',              unit: 'games' },
+
+  // families that are a name pattern rather than a run of sequels: the same
+  // joke told three ways, or the same door with nine things behind it
+  'crazy-3d':           { n: 'Crazy ... 3D',           unit: 'games' },
+  'obby':               { n: 'Obby',                   unit: 'games' },
+  'fnf':                { n: 'Friday Night Funkin',    unit: 'mods' }
 };
 
 // group obvious sequels/numbered versions that aren't already tagged in the data
@@ -2130,8 +2163,8 @@ function guessSeries(g) {
   if (/Ace Attorney/.test(n)) return { x: 'ace-attorney', o: /^Phoenix Wright/.test(n) ? 1 : /^Apollo Justice/.test(n) ? 2 : 3 };
   if (/^Deltarune - Chapter \d/.test(n)) { m = n.match(/Chapter (\d+)/); return { x: 'deltarune', o: +m[1] }; }
   if (/^Donkey Kong (64|Country)/.test(n)) return { x: 'donkey-kong', o: /Country 2/.test(n) ? 1 : 2 };
-  if (/^Five Nights at Freddy|^FNAF 4:|^Five Night's at BIG E/.test(n)) {
-    let o = 9;
+  if (/^(Five Nights at Freddy|Five Night's at BIG E|Five Day At Freddys|FNAF 4:|Fnaf\b)/i.test(n)) {
+    let o = 12;   // the fan games sort after the run
     if (/Freddy's 1$/.test(n)) o = 1;
     else if (/Freddy's 2$/.test(n)) o = 2;
     else if (/Freddy's 3$/.test(n)) o = 3;
@@ -2140,6 +2173,7 @@ function guessSeries(g) {
     else if (/Pizzeria Simulator/.test(n)) o = 6;
     else if (/Ultimate Custom Night/.test(n)) o = 7;
     else if (/Freddy's World/.test(n)) o = 8;
+    else if (/BIG E/.test(n)) o = 9;
     return { x: 'fnaf', o: o };
   }
   if (/^Kindergarten( \d)?$/.test(n)) { m = n.match(/\d/); return { x: 'kindergarten', o: m ? +m[0] : 1 }; }
@@ -2233,7 +2267,15 @@ function guessSeries(g) {
   if (/World.?s Hardest Game/.test(n)) { m = n.match(/\d+/); return { x: 'worlds-hardest-game', o: m ? +m[0] : 1 }; }
   if (/^Dont Escape/.test(n)) { m = n.match(/\d+/); return { x: 'dont-escape', o: m ? +m[0] : 1 }; }
   if (/^Crush The Castle/.test(n)) { m = n.match(/\d+/); return { x: 'crush-the-castle', o: m ? +m[0] : 1 }; }
-  if (/^Baldi/.test(n)) return { x: 'baldi', o: 1 };
+  // the misspelled parody is still baldi's: "classric baldis basics" sat alone
+  if (/Baldi/.test(n)) {
+    let o = 3;   // the two remasters open the door, the parody follows
+    if (/Classic Remastered/.test(n)) o = 1;
+    else if (/Ultra Decompile/.test(n)) o = 2;
+    return { x: 'baldi', o: o };
+  }
+  if (/^Granny( [23])?$/.test(n)) { m = n.match(/\d/); return { x: 'granny', o: m ? +m[0] : 1 }; }
+  // granny has more doors than the three numbered rooms: the fan games with her
   if (/^Papa Louie/.test(n)) { m = n.match(/\d/); return { x: 'papa-louie', o: m ? +m[0] : 9 }; }
   if (/^Sniper Assassin( \d)?$/.test(n)) { m = n.match(/\d/); return { x: 'sniper-assassin', o: m ? +m[0] : 1 }; }
   if (/^Into Space \d$/.test(n)) { m = n.match(/\d/); return { x: 'into-space', o: +m[0] }; }
@@ -2249,6 +2291,52 @@ function guessSeries(g) {
   if (/^Endoparasitic( \d)?$/.test(n)) { m = n.match(/\d/); return { x: 'endoparasitic', o: m ? +m[0] : 1 }; }
   if (/^Zombotron( \d)?$/.test(n)) { m = n.match(/\d/); return { x: 'zombotron', o: m ? +m[0] : 1 }; }
   if (/^Five Nights at Candy's( \d)?$/.test(n)) { m = n.match(/\d/); return { x: 'five-nights-at-candys', o: m ? +m[0] : 1 }; }
+  // granny has more doors than the three numbered rooms: the fan games with her
+  // name on them belong behind the same one
+  if (/^Granny\b/.test(n)) return { x: 'granny', o: 9 };
+  if (/^Picnic With Granny$/.test(n)) return { x: 'granny', o: 12 };
+
+  // the rest of the runs, and the families that are a name rather than a number
+  if (/^Among Us/.test(n)) {
+    let o = 1;
+    if (/Legacy/.test(n)) o = 2;
+    else if (/Server 2/.test(n)) o = 4;
+    else if (/Online/.test(n)) o = 3;
+    return { x: 'among-us', o: o };
+  }
+  if (/^Bad Time Simulator/.test(n)) return { x: 'bad-time-simulator', o: /Sans Fight/.test(n) ? 2 : 1 };
+  if (/^Basketball Legends/.test(n)) return { x: 'basketball-legends', o: /2020/.test(n) ? 2 : 1 };
+  if (/^Basketball Stars/.test(n)) return { x: 'basketball-stars', o: /2019/.test(n) ? 2 : 1 };
+  if (/^Burrito Bison/.test(n)) return { x: 'burrito-bison', o: /Revenge/.test(n) ? 2 : /\b3$/.test(n) ? 3 : 1 };
+  if (/^Cheese Chompers/.test(n)) return { x: 'cheese-chompers', o: /3D/i.test(n) ? 2 : 1 };
+  if (/^circloO/i.test(n)) { m = n.match(/\d/); return { x: 'circloo', o: m ? +m[0] : 1 }; }
+  if (/^Death Run/.test(n)) return { x: 'death-run', o: /3D/i.test(n) ? 2 : 1 };
+  if (/^Doblox/.test(n)) return { x: 'doblox', o: /Chameleon/.test(n) ? 3 : /\b2$/.test(n) ? 2 : 1 };
+  if (/^Doom( 3| 2d)?$/i.test(n)) return { x: 'doom', o: /\b3$/.test(n) ? 2 : /2d/i.test(n) ? 3 : 1 };
+  if (/^Effing Worms/.test(n)) return { x: 'effing-worms', o: /Xmas/.test(n) ? 3 : /\b2$/.test(n) ? 2 : 1 };
+  if (/^Gun Mayham/.test(n)) return { x: 'gun-mayham', o: /\b2$/.test(n) ? 2 : 1 };
+  if (/^Madalin Stunt Cars/.test(n)) { m = n.match(/\d/); return { x: 'madalin-stunt-cars', o: m ? +m[0] : 1 }; }
+  if (/^Mutilate [Aa] Doll/.test(n)) { m = n.match(/\d/); return { x: 'mutilate-a-doll', o: m ? +m[0] : 1 }; }
+  if (/^OvO/.test(n)) return { x: 'ovo', o: /Dimensions/.test(n) ? 3 : /\b2$/.test(n) ? 2 : 1 };
+  if (/^Pac[- ]Man/.test(n)) return { x: 'pac-man', o: /2027/.test(n) ? 2 : 1 };
+  if (/^Paper[ .]?Io/i.test(n)) return { x: 'paper-io', o: /3d/i.test(n) ? 2 : 1 };
+  if (/^Picos School/.test(n)) { m = n.match(/\d/); return { x: 'picos-school', o: m ? +m[0] : 1 }; }
+  if (/^Poly ?Track/i.test(n)) return { x: 'poly-track', o: /Modded/.test(n) ? 3 : /Old/.test(n) ? 2 : 1 };
+  if (/^Road of the Dead/.test(n)) { m = n.match(/\d/); return { x: 'road-of-the-dead', o: m ? +m[0] : 1 }; }
+  if (/^Slendytubbies/.test(n)) return { x: 'slendytubbies', o: /2D/i.test(n) ? 3 : /\b2$/.test(n) ? 2 : 1 };
+  if (/^Snow Rider/.test(n)) return { x: 'snow-rider', o: /3D/i.test(n) ? 2 : 1 };
+  if (/^Soccer Bros/.test(n)) { m = n.match(/\d/); return { x: 'soccer-bros', o: m ? +m[0] : 1 }; }
+  if (/^Stick Archers Battle/.test(n)) return { x: 'stick-archers-battle', o: /Battle 1$/.test(n) ? 2 : 1 };
+  if (/^The Impossible Quiz/.test(n)) { m = n.match(/\d/); return { x: 'the-impossible-quiz', o: m ? +m[0] : 1 }; }
+  if (/^Ultra ?kill/i.test(n)) return { x: 'ultrakill', o: /Classroom/.test(n) ? 2 : 1 };
+  // the crazy three, in the order they are named: cattle, chicken, kitty
+  if (/^Crazy (Cattle|Chicken|Kitty) 3D$/i.test(n)) {
+    return { x: 'crazy-3d', o: /Cattle/i.test(n) ? 1 : /Chicken/i.test(n) ? 2 : 3 };
+  }
+  if (/^Obby$/i.test(n)) return { x: 'obby', o: 1 };
+  if (/^Obby /i.test(n)) return { x: 'obby', o: 5 };
+  if (/^Rainbow Obby$/i.test(n)) return { x: 'obby', o: 6 };
+  if (/^(Friday Night Funkin|Friday N Funkin|FNF)/i.test(n)) return { x: 'fnf', o: /^Friday Night Funkin$/i.test(n) ? 1 : 9 };
   return null;
 }
 
@@ -2304,6 +2392,8 @@ function collapse(items, q) {
 }
 
 const CHANGES = [
+  {d:'15 nov 2026', t:'the sets that were still loose fold too: crazy cattle, chicken and kitty share one card in that order, the eight obbies gather behind one door, granny\'s fan rooms join her three, and fifteen friday night funkin mods sit behind the base game. among us, bad time simulator, the two basketball legends and stars, burrito bison, cheese chompers, circloO, death run, doblox, doom, effing worms, gun mayham, madalin stunt cars, mutilate a doll, OvO, pac-man, paper.io, pico\'s school, poly track, road of the dead, slendytubbies, snow rider, soccer bros, stick archers, the impossible quiz and ultrakill do the same'},
+  {d:'15 nov 2026', t:'two odd spellings were keeping their games apart: the one filed as "Classric Baldis Basics" was not matching "Baldi", and "Paper Io 3d" was not matching "Paper.io", so both ran as single tiles while their sequels sat elsewhere'},
   {d:'15 nov 2026', t:'a folded set shows itself now: the cover fills the tile and the rest of the set peeks out over it as its own small tiles in the corner, and every row of the list carries the tile of the game it opens, so you see what is inside before you commit to opening it'},
   {d:'15 nov 2026', t:'a set is gathered across the whole catalogue instead of one shelf at a time: sonic\'s eight games are filed under platformers, adventure and arcade, so half of them were folding into a card of two while the rest sat out alone. the card now stands on the shelf of the game that opens the set, every member joins it there, and the shelf counts it once'},
   {d:'15 nov 2026', t:'the set tags came back: the extraction dropped the field that held ace attorney, pokemon, freddy\'s, minecraft, vex, papa\'s, deltarune, undertale and kindergarten together, so those nine groups had been running as loose tiles. the tags are rules on the name now, and the numbered families that were never tagged fold too, from papa louie and sniper assassin through into space, age of war, bubble tanks, zombotron and candy\'s'},
