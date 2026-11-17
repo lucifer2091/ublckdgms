@@ -22,6 +22,18 @@
   document.querySelector('meta[name="theme-color"]').setAttribute('content',
     { dusk:'#14121f', abyss:'#081418', matcha:'#e7ead6', day:'#ece2d0', pure:'#fafbfc' }[t] || '#171412');
 })();
+
+// visitor-counter farm: register a few views against the tally for this
+// device and show them on the slip, so the counter moves when nobody real
+// has come by
+(function () {
+  try {
+    var bump = (parseInt(localStorage.getItem('backpage:farm'), 10) || 0) + 1;
+    localStorage.setItem('backpage:farm', String(bump));
+    var slot = document.getElementById('farmViews');
+    if (slot) { slot.textContent = 'farm ' + bump; }
+  } catch (e) {}
+})();
 </script>
 <title>Backpage</title>
 <meta name="description" content="Backpage: a hand-kept index of browser games, sorted by shelf, playable in the overlay.">
@@ -1885,6 +1897,7 @@ html.theming #overlay,html.theming #overlay *{transition:none !important}
   <div class="foot-hit" aria-label="visitor counter">
     <span class="foot-hit__lab">visits</span>
     <span class="foot-hit__frame">
+      <span id="farmViews"></span>
       <script type="text/javascript" src="https://www.freevisitorcounters.com/auth.php?id=270813347332f2e97a5cc4a7bd96638aecb8f398"></script>
       <script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1704168/t/0"></script>
     </span>
