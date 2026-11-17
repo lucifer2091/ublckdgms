@@ -2134,7 +2134,6 @@ const SERIES = {
   'five-nights-at-candys': { n: "Five Nights at Candy's", unit: 'games' },
 
   'among-us':           { n: 'Among Us',               unit: 'games' },
-  'bad-time-simulator': { n: 'Bad Time Simulator',     unit: 'games' },
   'basketball-legends': { n: 'Basketball Legends',     unit: 'games' },
   'basketball-stars':   { n: 'Basketball Stars',       unit: 'games' },
   'burrito-bison':      { n: 'Burrito Bison',          unit: 'games' },
@@ -2317,7 +2316,7 @@ function guessSeries(g) {
     else if (/Online/.test(n)) o = 3;
     return { x: 'among-us', o: o };
   }
-  if (/^Bad Time Simulator/.test(n)) return { x: 'bad-time-simulator', o: /Sans Fight/.test(n) ? 2 : 1 };
+  if (/^Bad Time Simulator/.test(n)) return { x: 'deltarune', o: /Sans Fight/.test(n) ? 7 : 6 };
   if (/^Basketball Legends/.test(n)) return { x: 'basketball-legends', o: /2020/.test(n) ? 2 : 1 };
   if (/^Basketball Stars/.test(n)) return { x: 'basketball-stars', o: /2019/.test(n) ? 2 : 1 };
   if (/^Burrito Bison/.test(n)) return { x: 'burrito-bison', o: /Revenge/.test(n) ? 2 : /\b3$/.test(n) ? 3 : 1 };
