@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Business Simulator</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0e0f12; overflow: hidden; }
+  ruffle-player { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<ruffle-player></ruffle-player>
+<script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+<script>
+  // the swf is served from a jsdelivr repo under a .dat name, so it is fetched
+  // as bytes and handed to ruffle as a blob rather than guessed at by extension
+  (function () {
+    var src = 'https://cdn.jsdelivr.net/gh/AlbertKraus/SoftwareRSP@a9bc27264ffc1449454f1366f4b0f87769fb6367/src/extlibs/Dat/540174.dat';
+    var player = document.querySelector('ruffle-player');
+    var start = function () {
+      var ruffle = window.RufflePlayer && window.RufflePlayer.newest();
+      if (!ruffle) { return setTimeout(start, 120); }
+      var p = ruffle.createPlayer ? ruffle.createPlayer() : player;
+      if (p !== player) { player.replaceWith(p); }
+      p.style.width = '100%';
+      p.style.height = '100%';
+      fetch(src).then(function (r) { return r.arrayBuffer(); }).then(function (buf) {
+        p.load({ data: buf, swfFileName: 'business-simulator.swf' });
+      }).catch(function () {
+        p.load(src);
+      });
+    };
+    start();
+  })();
+</script>
+</body>
+</html>
