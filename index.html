@@ -2115,7 +2115,7 @@ const SERIES = {
   'worlds-hardest-game':{ n: "World's Hardest Game",   unit: 'games' },
   'dont-escape':        { n: "Don't Escape",           unit: 'games' },
   'crush-the-castle':   { n: 'Crush the Castle',       unit: 'games' },
-  'baldi':              { n: "Baldi's Basics",         unit: 'games' },
+  'baldi':              { n: "Baldi's Basics Custom Mod", unit: 'games' },
 
   'papa-louie':         { n: 'Papa Louie',             unit: 'games' },
   'sniper-assassin':    { n: 'Sniper Assassin',        unit: 'games' },
@@ -2349,6 +2349,16 @@ function guessSeries(g) {
   if (/^Obby /i.test(n)) return { x: 'obby', o: 5 };
   if (/^Rainbow Obby$/i.test(n)) return { x: 'obby', o: 6 };
   if (/^(Friday Night Funkin|Friday N Funkin|FNF)/i.test(n)) return { x: 'fnf', o: /^Friday Night Funkin$/i.test(n) ? 1 : 9 };
+  // the odd family the hub keeps folding into the undertale set: the cave, the
+  // flying birds, the rope, the scientist and the truck all sit in one card now
+  if (/^Angry Birds/.test(n)) { m = n.match(/\d/); return { x: 'undertale', o: m ? +m[0] : 1 }; }
+  if (/^Cut the Rope/.test(n)) { m = n.match(/\d/); return { x: 'undertale', o: /Gift/.test(n) ? 2 : /Time Travel/.test(n) ? 3 : 1 }; }
+  if (/^Half-?Life/.test(n)) { m = n.match(/\d/); return { x: 'undertale', o: /Opposing Force/.test(n) ? 2 : 1 }; }
+  if (/^BERGENTRUCK/.test(n)) return { x: 'undertale', o: 1 };
+  // the modded corner of the schoolhouse: the stunt driver and the weird little
+  // thing join baldi's custom mod behind the remakes
+  if (/^Drive Mad/.test(n)) return { x: 'baldi', o: 3 };
+  if (/^Uvuvwev/.test(n)) return { x: 'baldi', o: 4 };
   return null;
 }
 
